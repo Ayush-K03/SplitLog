@@ -1,15 +1,15 @@
 import express from "express";
 import { createUserInDatabase,handleUserLogin,displayHomepage,displayLoginpage } from "../controllers/authController.js"; 
-export const router= express.Router();
+export const userRouter= express.Router();
 
-router
+userRouter
 .route("/signup")
     // .get()
     .post(createUserInDatabase)
 
-router.route("/login")
+userRouter.route("/login")
     .get(displayLoginpage)
     .post(handleUserLogin)
 
-router.route("/homepage")
+userRouter.route("/homepage")
     .get(displayHomepage)
