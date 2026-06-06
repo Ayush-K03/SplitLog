@@ -9,7 +9,7 @@ export function tokenGeneration (user,res){
     },secretKey);
 
     res.cookie('token',payload);
-    console.log("A token was generated and stored in cookie...")
+    console.log("A token was generated and stored in cookie..")
 }
 
 export function checkforToken(req,res,next){
