@@ -12,6 +12,7 @@ export function tokenGeneration (user,res){
     console.log("A token was generated and stored in cookie..")
 }
 
+
 export function checkforToken(req,res,next){
     if (req.cookies?.token){
         try{
