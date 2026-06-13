@@ -2,8 +2,7 @@ import express from "express";
 import { createUserInDatabase,handleUserLogin,displayHomepage,displayLoginpage } from "../controllers/authController.js"; 
 export const userRouter= express.Router();
 
-userRouter
-.route("/signup")
+userRouter.route("/signup")
     // .get()
     .post(createUserInDatabase)
 
