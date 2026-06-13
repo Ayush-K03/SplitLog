@@ -1,5 +1,7 @@
 import { Groups } from "../models/Group.js";
 import { Expense } from "../models/Expense.js";
+import { calculateBalances } from "../config/balanceCalc.js";
+import {User} from "../models/User.js"
 
 export async function addExpense(req, res) {
   try {
@@ -62,37 +64,68 @@ export async function checkIfUserBelongToGroup(req, res, next) {
   else next();
 }
 
-export async function calculateBalances (req,res){
-  try {
-    const expenses= await Expense.find({groupId: req.params.groupId});
-    if (expenses.length===0) return res.send("NO EXPENSE till now !").status(200);
-    
-    const group= await Groups.findById(req.params.groupId).populate('members','firstName');
-    const balances={};
-    group.members.map((eachMember)=>balances[eachMember._id]=0 );
-    
-    expenses.forEach((eachExpense)=>{
-      const partiesInvolved=eachExpense.splitAmong.length;
-      const amountInvolved=eachExpense.amount;
-      const indiviualAmount = amountInvolved/partiesInvolved;
-
-      //give payer all amount then debit his part 
-      balances[eachExpense.paidBy]+=amountInvolved ;
-      
-      //map out debts
-      eachExpense.splitAmong.forEach((value)=> {
-        if (balances[value]==null) balances[value]=-indiviualAmount;
-        else balances[value]-=indiviualAmount;
-      });
-    });
-    // const result ={};
-    // balances.map((value)=>console.log(value));
-    res.json(balances);
-  } catch (error) {
-    console.log(err);
-    res.send ("An error showing transactions ....");
-  }
+export async function showIndiviualBalances (req,res){
+  const balanceSheet = await calculateBalances(req.params.groupId);
+  console.log(balanceSheet)
+  if (!balanceSheet) res.send("an error 89 occured");
+  res.json(balanceSheet);
 }
 
 // add someone who is not in group , in balance object 
 // then you have to show them as external while givig back the result 
+
+
+
+export async function showSettlements(req,res){
+  const balanceSheet = await calculateBalances(req.params.groupId);
+  const creditors={};
+  const debtors={};
+
+
+  Object.entries(balanceSheet).map(([person,amount]) => {
+    if (amount>0) creditors[person]=amount;
+    else debtors[person]=-amount;
+  });
+
+  const creditChart= Object.entries(creditors).map(([user,amount])=>({user,amount}));
+  const debitChart= Object.entries(debtors).map(([user,amount])=>({user,amount}));
+  // const debitChart= Object.entries(debtors);
+  
+  creditChart.sort((a,b)=> b.amount-a.amount);
+  debitChart.sort((a,b)=> b.amount-a.amount);
+
+
+  const settlements=[];
+  let creditorPointer =0; let debitorPointer=0;
+
+  while (creditorPointer<creditChart.length && debitorPointer<debitChart.length){
+    const currentCreditor = creditChart[creditorPointer];
+    const currentDebitor = debitChart[debitorPointer];
+  
+    if (Math.min(currentCreditor.amount,currentDebitor.amount)!=0){
+      settlements.push({from:currentDebitor.user,to:currentCreditor.user,amount : Math.min(currentCreditor.amount,currentDebitor.amount)});
+    }
+
+
+    if (currentDebitor.amount > currentCreditor.amount){
+      currentDebitor.amount-=currentCreditor.amount;
+      currentCreditor.amount=0;
+      creditorPointer++;
+    }
+
+    else{
+      currentCreditor.amount-=currentDebitor.amount;
+      currentDebitor.amount=0;
+      debitorPointer++;
+    }
+    
+  }
+
+  await User.populate(settlements,{path:'from to',select:'firstName lastName'});
+
+  settlements.map(value=>{
+    console.log(`${value.from.firstName} needs to pay ${value.to.firstName} : ₹ ${value.amount}`);
+  })
+  console.log(settlements);
+  res.json(creditors);
+}

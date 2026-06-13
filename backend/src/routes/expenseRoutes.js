@@ -1,5 +1,5 @@
 import express from 'express';
-import { addExpense,checkIfUserBelongToGroup,showExpenses,calculateBalances } from '../controllers/expenseController.js';
+import { addExpense,checkIfUserBelongToGroup,showExpenses, showIndiviualBalances, showSettlements } from '../controllers/expenseController.js';
 export const expenseRouter = express.Router();
 
 expenseRouter.route("/:groupId/expenses")
@@ -7,4 +7,6 @@ expenseRouter.route("/:groupId/expenses")
     .get(checkIfUserBelongToGroup,showExpenses)
 
 expenseRouter.route("/:groupId/balances")
-    .get(calculateBalances)
+    .get(checkIfUserBelongToGroup,showIndiviualBalances)
+expenseRouter.route("/:groupId/settlements")
+    .get(checkIfUserBelongToGroup,showSettlements)
