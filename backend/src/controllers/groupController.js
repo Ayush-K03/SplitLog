@@ -7,6 +7,7 @@ import crypto from 'crypto'
 
 export async function handleGroupCreation(req,res) {
     try{
+        console.log(req.body.groupName)
         if (req.body.groupName.length===0){
             console.log("User gave a invalid username");
             return res.status(404).send("Enter a valid group name !")
@@ -33,7 +34,7 @@ export async function handleGroupCreation(req,res) {
 export async function showUserGroup(req,res) {
     
     const gId = req.params.groupId;
-    const group = await Groups.findById(gId);
+    const group = await Groups.findById(gId).populate('createdBy','firstName');
 
     if (!mongoose.Types.ObjectId.isValid(gId) || !group){
         console.log("No such group exsists");
@@ -81,8 +82,8 @@ export async function showMyGroups(req,res){
             console.log("User does not belong to any group !");
             return res.status(401).send("You are not part of any group");
         }
-        console.log("User specific groups were shown !")
-        res.status(200).json(groups.map((value)=>value.groupName));
+        console.log("User specific groups were shown !");
+        res.status(200).json(groups.map((value)=>{value.groupName));
 
     }
 

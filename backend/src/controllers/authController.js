@@ -22,7 +22,7 @@ export async function createUserInDatabase(req, res) {
     });
     console.log("User was created !");
     tokenGeneration(user, res);
-    res.status(201).send("Success !");
+    res.status(201).json("Success !");
   } catch (error) {
     console.log("Error in creation of user!");
     console.log(error);

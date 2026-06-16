@@ -6,18 +6,19 @@ import { displayHomepage } from "./controllers/authController.js";
 import { checkforToken } from "./middleware/authMiddleware.js";
 import { groupRouter } from "./routes/groupRoutes.js";
 import { expenseRouter } from "./routes/expenseRoutes.js";
-
+import { verifyCheck } from "./config/verification.js";
 
 const app=express();
 
 const port= 8000;
 
-app.listen(port,()=>console.log(`http://localhost:${port}`));
+app.listen(port,() => console.log(`http://localhost:${port}`));
 connectToDatabase();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(cookieParser());
+app.get("/api/verify",verifyCheck);
 app.use("/api/auth",userRouter);
 
 app.use(checkforToken);
