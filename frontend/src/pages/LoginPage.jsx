@@ -3,7 +3,7 @@ import {backdropStyle,boxStyle} from "../assets/errorBox"
 
 import {useState,useEffect} from "react"
 import axios from "axios";
-import {useNavigate} from "react-router-dom"
+import {useNavigate,Link} from "react-router-dom"
 
 export function LoginPage (){
   const [email,setEmail]= useState("")
@@ -39,7 +39,9 @@ export function LoginPage (){
       <label>Password: </label>
       <input type="text" value ={password} onChange={(e)=> setPassword(e.target.value)}/>  
       <br />  
-      <button onClick={()=>handleAccountLogin(email,password)}>Submit</button>
+      <button onClick={handleAccountLogin}>Submit</button>
+      <pre>No Account ?</pre>
+      <Link to="/signup"><h6>Create Account</h6></Link>
     </>
   );
 }

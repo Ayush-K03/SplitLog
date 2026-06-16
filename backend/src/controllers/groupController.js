@@ -34,13 +34,14 @@ export async function handleGroupCreation(req,res) {
 export async function showUserGroup(req,res) {
     
     const gId = req.params.groupId;
-    const group = await Groups.findById(gId).populate('createdBy','firstName');
+    const group = await Groups.findById(gId).populate('createdBy members','firstName');
 
     if (!mongoose.Types.ObjectId.isValid(gId) || !group){
         console.log("No such group exsists");
         return res.status(401).send("no such group exsist please create one !");
     }
     
+    console.log(group);
     res.status(200).json(group);
     console.log("User found their group !");
 }
@@ -56,16 +57,20 @@ export async function joinGroup(req,res){
         
         if (group.members.includes(req.user.userId)){
             console.log("already a member opened invite link....");
-            return res.status(200).json(group);
+            return res.status(403).json(group);
         }
         
         const groupOwner = await User.findById(group.createdBy);
-        if (!groupOwner) res.send("This group was deleted or owner left the App !")
+        if (!groupOwner){
+            res.status(404).send("This group was deleted or owner left the App !")
+            console.log(groupOwner);
+        }
         const ownerName = groupOwner.firstName;
         group.members.push(req.user.userId);
         await group.save();
         console.log("added user successfully!");
-        res.status(200).send(`Welcome to the group (${group.groupName})  createdBy : ${ownerName}`);
+        res.status(200).json(group._id);
+        // .send(`Welcome to the group (${group.groupName})  createdBy : ${ownerName}`);
 
     }
     catch(err){
@@ -83,7 +88,7 @@ export async function showMyGroups(req,res){
             return res.status(401).send("You are not part of any group");
         }
         console.log("User specific groups were shown !");
-        res.status(200).json(groups.map((value)=>{value.groupName));
+        res.status(200).json(groups.map((value)=>({groupName: value.groupName,gId:value._id})));
 
     }
 

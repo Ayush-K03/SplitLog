@@ -12,16 +12,20 @@ import { fetchGroupList } from "./loaders/indiviualGroupLoader";
 import { dashBoardLoad } from "./loaders/dashBoardLoader";
 import { CreateGroupForm } from "./pages/CreateGroups";
 import { ShowGroupDetails } from "./pages/ViewGroup";
+import { JoinGroup } from "./pages/JoinGroup";
+
 
 const root = createRoot(document.getElementById("root"));
 let user ={};
 
 const myMainRouter =  createBrowserRouter([
+  {path:"/", element:<LoginPage/>},
   {path:"/login", element:<LoginPage/>},
   {path:"/signup", element:<SignUpPage/>},
   {element: <ProtectedRoute/>, children : [
     {path: "/dashboard", element:<CreateDashBoardPage/>, loader:dashBoardLoad},
     {path: "/createGroups", element:<CreateGroupForm/>},
+    {path: "/joinGroup", element:<JoinGroup/>},
     {path: "/groupDetails/:groupId", element:<ShowGroupDetails/>, loader:fetchGroupList}
   ]}
 ])

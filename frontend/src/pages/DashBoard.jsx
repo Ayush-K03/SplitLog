@@ -16,8 +16,8 @@ export function CreateDashBoardPage(){
       {(groupData.length==0) ? "you are not in any group" : groupData.map((value)=>{
         return (<>
           <div key={value}>
-            {value}
-            <button onClick={()=>navigate("/",)}>View Group</button>
+            {value.groupName}
+            <button onClick={()=>navigate(`/groupDetails/${value.gId}`)}>View Group</button>
           </div>
         </>)
       })}
