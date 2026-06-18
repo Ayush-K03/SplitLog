@@ -6,8 +6,9 @@ import { useNavigate,useLoaderData,RouterProvider,createBrowserRouter, Routes, R
 export function CreateDashBoardPage(){
   const navigate = useNavigate();
 
-  const groupData = useLoaderData();
+  const {groupData,positiveBalance,negativeBalance} = useLoaderData();
   
+
   return (
     <>
       Welcome User
@@ -23,7 +24,10 @@ export function CreateDashBoardPage(){
       })}
 
       <br />
-      <button onClick={()=>{navigate("/createGroup")}}>Create Group</button>
+      <h2>You are owed : {positiveBalance}</h2>
+      <h2>You are owe : {negativeBalance}</h2>
+      <h2></h2>
+      <button onClick={()=>{navigate("/createGroups")}}>Create Group</button>
       <button onClick={()=>{}}>Join Group</button>
     </>
   );

@@ -10,9 +10,11 @@ import { CreateDashBoardPage } from "./pages/DashBoard";
 
 import { fetchGroupList } from "./loaders/indiviualGroupLoader";
 import { dashBoardLoad } from "./loaders/dashBoardLoader";
+// import { getExpenses } from "./loaders/eachGroupTransactionLoader";
 import { CreateGroupForm } from "./pages/CreateGroups";
 import { ShowGroupDetails } from "./pages/ViewGroup";
 import { JoinGroup } from "./pages/JoinGroup";
+import { AddExepense } from "./pages/AddExpense";
 
 
 const root = createRoot(document.getElementById("root"));
@@ -26,7 +28,9 @@ const myMainRouter =  createBrowserRouter([
     {path: "/dashboard", element:<CreateDashBoardPage/>, loader:dashBoardLoad},
     {path: "/createGroups", element:<CreateGroupForm/>},
     {path: "/joinGroup", element:<JoinGroup/>},
-    {path: "/groupDetails/:groupId", element:<ShowGroupDetails/>, loader:fetchGroupList}
+    {path: "/groupDetails/:groupId", element:<ShowGroupDetails/>, loader:fetchGroupList},
+    {path: "/:groupId/addExpense", element:<AddExepense/>},
+    {path: "/:groupId/expense_list", element:<AddExepense/>}
   ]}
 ])
 

@@ -4,8 +4,8 @@ import { useLoaderData,RouterProvider,createBrowserRouter, Routes, Route,Outlet,
 
 
 export async function dashBoardLoad(user){
-    const res= await axios.get("api/groups/my-groups");
-    const groupData=(res.data);
-    console.log(groupData);
-    return groupData;
+    const groupData= (await axios.get("api/groups/my-groups")).data;
+    const {positiveBalance,negativeBalance} = (await axios.get("api/summary")).data;
+    // console.log(positiveBalance)
+    return {groupData,positiveBalance,negativeBalance};
 }

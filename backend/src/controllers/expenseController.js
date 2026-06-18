@@ -31,7 +31,7 @@ export async function addExpense(req, res) {
 
 export async function showExpenses(req, res) {
   try {
-    const expenses = await Expense.find({ groupId: req.params.groupId });
+    const expenses = await Expense.find({ groupId: req.params.groupId }).populate('paidBy splitAmong' , 'firstName');
     if (expenses.length === 0)
       return res.status(200).send("No expenses created till now ....");
     res.status(200).json(expenses);
@@ -57,7 +57,7 @@ export async function showExpenses(req, res) {
 
 export async function checkIfUserBelongToGroup(req, res, next) {
   const groupExsist = await Groups.findById(req.params.groupId);
-  if (!groupExsist) return res.status(200).send("Such group does not exsist");
+  if (!groupExsist) return res.status(200).send("Suchhhhh group does not exsist");
   const userInGroup = groupExsist.members.includes(req.user.userId);
   if (!userInGroup || !groupExsist)
     return res.status(403).send("You do not belong to this group");
@@ -68,7 +68,8 @@ export async function showIndiviualBalances (req,res){
   const balanceSheet = await calculateBalances(req.params.groupId);
   console.log(balanceSheet)
   if (!balanceSheet) res.send("an error 89 occured");
-  res.json(balanceSheet);
+  const userExpenseInGroup = balanceSheet[req.user.userId];
+  res.json({balanceSheet,userExpenseInGroup});
 }
 
 // add someone who is not in group , in balance object 
@@ -127,5 +128,34 @@ export async function showSettlements(req,res){
     console.log(`${value.from.firstName} needs to pay ${value.to.firstName} : ₹ ${value.amount}`);
   })
   console.log(settlements);
-  res.json(creditors);
+  res.json(settlements)
+  // res.json(creditors);
+}
+
+
+
+
+
+export async function userExpenseAcrossGroups(req,res){
+    const groupInfo = await Groups.find({members: req.user.userId});
+    if (!groupInfo.length){
+        console.log("User does not belong to any group !");
+        return res.status(401).send("You are not part of any group");
+    }
+    let positiveBalance=0;
+    let negativeBalance=0;
+    for( const value of groupInfo){
+      console.log(value)
+      const balance = await calculateBalances(value._id);
+      console.log(balance)
+      const financialStatus = balance[req.user.userId] ?? 0;
+      console.log(financialStatus);
+      if ( financialStatus>0) positiveBalance+= financialStatus;
+      else negativeBalance+=Math.abs(financialStatus);
+    }
+    console.log(req.user.userId)
+    res.json({positiveBalance,negativeBalance});
+    console.log(positiveBalance);
+    console.log(negativeBalance);
+
 }

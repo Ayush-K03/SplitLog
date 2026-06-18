@@ -29,6 +29,6 @@ export async function calculateBalances (groupId){
   } catch (error) {
     console.log(err);
     console.log ("An error showing transactions ....");
-    return null;
+    return -1;
   }
 }

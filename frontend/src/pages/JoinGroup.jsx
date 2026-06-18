@@ -15,8 +15,8 @@ export function JoinGroup(){
             setShowSuccessBox(true);
             setTimeout(()=>
                 {
-                    return navigate(`/groupDetails/${res.data}`)
                     setShowSuccessBox(false)
+                    navigate(`/groupDetails/${res.data}`)
                 }
             ,3000)
         }
