@@ -1,0 +1,1273 @@
+FILE: package.json
+```
+{
+  "name": "splitlog",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.18.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-router": "^7.17.0",
+    "react-router-dom": "^7.17.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@eslint/js": "^10.0.1",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "vite": "^8.0.12"
+  }
+}
+```
+
+FILE: vite.config.js
+```
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      // Any request starting with /api will be sent to the backend automatically
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
+})
+```
+
+FILE: index.html
+```
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="./src/index.css">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Splitlog</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/App.jsx"></script>
+  </body>
+</html>
+```
+
+FILE: src/main.jsx
+```
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+```
+
+FILE: src/App.jsx
+```
+import axios from "axios"
+import {useState,useEffect} from "react"
+
+import {createRoot} from "react-dom/client"
+import { useLoaderData,RouterProvider,createBrowserRouter, Routes, Route,Outlet,Navigate } from "react-router-dom";
+
+import { LoginPage } from "./pages/LoginPage";
+import {SignUpPage} from "./pages/SignupPage"
+import { CreateDashBoardPage } from "./pages/DashBoard";
+
+import { fetchGroupList } from "./loaders/indiviualGroupLoader";
+import { dashBoardLoad } from "./loaders/dashBoardLoader";
+// import { getExpenses } from "./loaders/eachGroupTransactionLoader";
+import { CreateGroupForm } from "./pages/CreateGroups";
+import { ShowGroupDetails } from "./pages/ViewGroup";
+import { JoinGroup } from "./pages/JoinGroup";
+import { AddExepense } from "./pages/AddExpense";
+
+
+const root = createRoot(document.getElementById("root"));
+let user ={};
+
+const myMainRouter =  createBrowserRouter([
+  {path:"/", element:<LoginPage/>},
+  {path:"/login", element:<LoginPage/>},
+  {path:"/signup", element:<SignUpPage/>},
+  {element: <ProtectedRoute/>, children : [
+    {path: "/dashboard", element:<CreateDashBoardPage/>, loader:dashBoardLoad},
+    {path: "/createGroups", element:<CreateGroupForm/>},
+    {path: "/joinGroup", element:<JoinGroup/>},
+    {path: "/groupDetails/:groupId", element:<ShowGroupDetails/>, loader:fetchGroupList},
+    {path: "/:groupId/addExpense", element:<AddExepense/>},
+    {path: "/:groupId/expense_list", element:<AddExepense/>}
+  ]}
+])
+
+export function App(){
+  return (<RouterProvider router={myMainRouter} />);
+}
+
+
+function ProtectedRoute(){
+  const [isLoading,setIsLoading] = useState(true);
+  const [isAuthenticated,setIsAuthenticated] = useState(false);
+  useEffect(()=>{
+    async function checkAuth(){
+      try{
+        const res= await axios.get("/api/verify");
+
+        if (res.data.isAuthenticated){
+          setIsAuthenticated(true);
+          user= res.data.user;
+        }
+      }
+      catch(err){
+        console.log(err);
+        setIsAuthenticated(false);
+      }
+
+      finally{
+        setIsLoading(false);
+      }
+    }
+    checkAuth();
+
+  },[]);
+
+
+  if (isLoading) return <div>Loading Page... Please Wait</div>;
+  console.log(isAuthenticated,"is valid !");
+  if (isAuthenticated) {return <Outlet/>;}
+  else {return <Navigate to = "/login" replace/>;}
+}
+
+// function PublicRoute(){
+//   const [isLoading, seIsLoading]= useState(true);
+//   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+//   useEffect(()=>{
+//     async function checkIsLoggedIn(){
+//       try{
+//         const res = await axios.get("/api/verify");
+//         if (res.data.isAuthenticated) return <Outlet/>;
+//       }
+//     }
+//   },[])
+
+
+// }
+
+
+
+
+
+
+root.render(<App/>);
+```
+
+FILE: src/index.css
+```
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #140909;
+  --surface: #241111;
+  --surface-2: #301616;
+  --surface-3: #401b1b;
+  --text: #fff7f7;
+  --muted: #f4c8c8;
+  --primary: #5d1010;
+  --primary-2: #9a1414;
+  --accent: #ff6b6b;
+  --border: #5a2525;
+  --shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+  --radius: 18px;
+  --radius-sm: 12px;
+  font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(255, 107, 107, 0.12), transparent 18%),
+    linear-gradient(180deg, #120707 0%, #220b0b 48%, #341010 100%);
+  color: var(--text);
+}
+
+body::before {
+  content: "";
+/* Import a clean UI font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+/* --- New professional layout and theme --- */
+:root {
+  --bg: #100606; /* deep red-black */
+  --surface: #1f0b0b;
+  --surface-2: #2a0f0f;
+  --surface-3: #3a1414;
+  --text: #ffffff;
+  --muted: #f0c9c9;
+  --accent: #ff6b6b; /* warm accent */
+  --primary: #a52727;
+  --border: rgba(255,255,255,0.04);
+  --glass: rgba(255,255,255,0.02);
+  --shadow-lg: 0 28px 60px rgba(0,0,0,0.6);
+  --shadow-sm: 0 8px 20px rgba(0,0,0,0.45);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(255, 107, 107, 0.10), transparent 18%),
+    linear-gradient(180deg, #0c0303 0%, #170606 48%, #2a0c0c 100%);
+  color: var(--text);
+}
+
+/* Central content container used across pages */
+.container {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 36px 20px;
+}
+  transform: translateY(0);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+/* form controls refinement for better contrast */
+select, input[type="number"], input[type="text"], input[type="email"], input[type="password"] {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
+  border: 1px solid rgba(255,255,255,0.04);
+}
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(255, 107, 107, 0.12);
+  background: var(--surface);
+}
+
+label {
+  display: block;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 0.45rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  color: var(--text);
+}
+
+h1 {
+  font-size: clamp(2rem, 3.6vw, 3.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.05em;
+  font-weight: 800;
+}
+
+h2 {
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+p {
+  color: var(--muted);
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #ff9a9a;
+  text-decoration: underline;
+}
+
+::selection {
+  background: rgba(255, 107, 107, 0.3);
+  color: #fff;
+}
+
+/* website layout shell */
+/* --- Professional site shell --- */
+#app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header / Navbar */
+header.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.45);
+}
+
+header .nav {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding: 18px 20px;
+}
+
+.logo {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  color:var(--text);
+}
+
+.nav-links {
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+.nav-links a {
+  color: var(--muted);
+  font-weight:600;
+  padding:8px 12px;
+  border-radius:10px;
+}
+
+.nav-links a:hover { color: var(--accent); }
+
+/* Hero / Top section */
+.hero {
+  padding: 64px 20px;
+  display:flex;
+  gap:36px;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.hero .hero-intro {
+  max-width:720px;
+}
+
+.hero h1 { margin-bottom: 0.6rem; font-size: clamp(2rem, 4vw, 3.6rem); }
+.hero p { color: var(--muted); font-size: 1.05rem; margin-bottom: 1.2rem; }
+
+.hero .cta { display:flex; gap:12px; }
+
+/* Main content layout: two-column */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items:start;
+}
+
+/* Right sidebar */
+.sidebar { position: sticky; top: 90px; }
+
+/* Card sections */
+#root > .container > .card,
+.card { padding: 20px; border-radius: var(--radius); background: linear-gradient(180deg, var(--surface), var(--surface-2)); box-shadow: var(--shadow-sm); }
+
+/* card grid layout */
+.card-grid,
+.group-grid,
+.expense-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.card,
+.group-card,
+.expense-card,
+[class*="card"] {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover,
+.group-card:hover,
+.expense-card:hover,
+[class*="card"]:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px rgba(255, 107, 107, 0.12);
+  border-color: var(--accent);
+}
+
+/* form container */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+form > input,
+form > textarea,
+form > select,
+form > label,
+form > div {
+  width: 100%;
+}
+
+/* form row for side-by-side inputs */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.form-row > input,
+.form-row > select,
+.form-row > div {
+  margin-bottom: 0;
+}
+
+/* stronger spacing for real content blocks */
+#root > * > h1,
+#root > * > h2,
+#root > * > h3,
+#root > * > p,
+#root > * > label,
+#root > * > button,
+#root > * > input,
+#root > * > div,
+#root > * > section,
+#root > * > form,
+#root > * > article {
+  margin-bottom: 1rem;
+}
+
+/* heading spacing */
+h1 {
+  margin-bottom: 1.5rem;
+}
+
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  margin-bottom: 0.8rem;
+}
+
+/* button group */
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.button-group button {
+  flex: 1;
+  min-width: 120px;
+}
+
+/* stats and metrics display */
+.stat,
+.metric,
+.balance {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.stat > span,
+.metric > span,
+.balance > span {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.stat > strong,
+.metric > strong,
+.balance > strong {
+  display: block;
+  font-size: 1.8rem;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* responsive behavior */
+@media (max-width: 900px) {
+  .container { padding: 28px 18px; }
+
+  .main-grid { grid-template-columns: 1fr; }
+
+  .card-grid,
+  .group-grid,
+  .expense-grid { grid-template-columns: 1fr; }
+
+  .button-group { flex-direction: column; }
+}
+
+@media (max-width: 768px) {
+  header .nav { flex-direction: column; align-items:flex-start; gap:12px; }
+  .hero { padding: 36px 18px; }
+  .container { padding: 18px 14px; }
+  .card { padding: 1rem; }
+}
+
+@media (max-width: 480px) {
+  .hero { padding: 20px 12px; }
+  h1 { font-size: 1.6rem; }
+}
+
+```
+
+FILE: src/App.css
+```
+.counter {
+  font-size: 16px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+  margin-bottom: 24px;
+
+  &:hover {
+    border-color: var(--accent-border);
+  }
+  &:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+.hero {
+  position: relative;
+
+  .base,
+  .framework,
+  .vite {
+    inset-inline: 0;
+    margin: 0 auto;
+  }
+
+  .base {
+    width: 170px;
+    position: relative;
+    z-index: 0;
+  }
+
+  .framework,
+  .vite {
+    position: absolute;
+  }
+
+  .framework {
+    z-index: 1;
+    top: 34px;
+    height: 28px;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
+      scale(1.4);
+  }
+
+  .vite {
+    z-index: 0;
+    top: 107px;
+    height: 26px;
+    width: auto;
+    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
+      scale(0.8);
+  }
+}
+
+#center {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  place-content: center;
+  place-items: center;
+  flex-grow: 1;
+
+  @media (max-width: 1024px) {
+    padding: 32px 20px 24px;
+    gap: 18px;
+  }
+}
+
+#next-steps {
+  display: flex;
+  border-top: 1px solid var(--border);
+  text-align: left;
+
+  & > div {
+    flex: 1 1 0;
+    padding: 32px;
+    @media (max-width: 1024px) {
+      padding: 24px 20px;
+    }
+  }
+
+  .icon {
+    margin-bottom: 16px;
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+#docs {
+  border-right: 1px solid var(--border);
+
+  @media (max-width: 1024px) {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+#next-steps ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 0;
+
+  .logo {
+    height: 18px;
+  }
+
+  a {
+    color: var(--text-h);
+    font-size: 16px;
+    border-radius: 6px;
+    background: var(--social-bg);
+    display: flex;
+    padding: 6px 12px;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+
+    &:hover {
+      box-shadow: var(--shadow);
+    }
+    .button-icon {
+      height: 18px;
+      width: 18px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    margin-top: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    li {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    a {
+      width: 100%;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+  }
+}
+
+#spacer {
+  height: 88px;
+  border-top: 1px solid var(--border);
+  @media (max-width: 1024px) {
+    height: 48px;
+  }
+}
+
+.ticks {
+  position: relative;
+  width: 100%;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: -4.5px;
+    border: 5px solid transparent;
+  }
+
+  &::before {
+    left: 0;
+    border-left-color: var(--border);
+  }
+  &::after {
+    right: 0;
+    border-right-color: var(--border);
+  }
+}
+
+body{
+  background-color: rgba(0, 0, 0, 0.648);
+  color: white;
+}
+```
+
+FILE: src/assets/errorBox.jsx
+```
+export const backdropStyle = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: "rgba(0, 0, 0, 0.3)",
+  backdropFilter: "blur(5px)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 1000
+};
+
+export const boxStyle = {
+  color:"black",
+  backgroundColor: "#fff",
+  padding: "20px",
+  borderRadius: "8px",
+  boxShadow: "0px 4px 15px rgba(0,0,0,0.2)",
+  textAlign: "center"
+};
+```
+
+FILE: src/loaders/dashBoardLoader.jsx
+```
+import axios from "axios";
+import { useLoaderData,RouterProvider,createBrowserRouter, Routes, Route,Outlet,Navigate } from "react-router-dom";
+
+
+
+export async function dashBoardLoad(user){
+    const groupData= (await axios.get("api/groups/my-groups")).data;
+    const {positiveBalance,negativeBalance} = (await axios.get("api/summary")).data;
+    // console.log(positiveBalance)
+    return {groupData,positiveBalance,negativeBalance};
+}
+```
+
+FILE: src/loaders/indiviualGroupLoader.jsx
+```
+import axios from "axios";
+export async function fetchGroupList({params}){
+    const groupDetails= (await axios.get (`/api/groups/show/${params.groupId}`)).data;
+    const  groupTransactionData = (await axios.get(`/api/${params.groupId}/expenses`)).data;
+    const {userExpenseInGroup} = (await axios.get(`/api/${params.groupId}/balances`)).data;
+    console.log(userExpenseInGroup);
+    return {groupDetails,groupTransactionData,userExpenseInGroup};
+}
+
+```
+
+FILE: src/pages/LoginPage.jsx
+```
+import {backdropStyle,boxStyle} from "../assets/errorBox"
+
+
+import {useState,useEffect} from "react"
+import axios from "axios";
+import {useNavigate,Link} from "react-router-dom"
+
+export function LoginPage (){
+  const [email,setEmail]= useState("")
+  const [password,setPassword]= useState("")
+  const [showError,setShowError]= useState(false)
+  const navigate = useNavigate();
+
+  async function handleAccountLogin() {
+    try{
+      const res = await axios.post("/api/auth/login",{email,password});
+      return navigate("/dashboard",{replace:true})
+    }
+    catch(err){
+      setShowError(true);
+    }
+
+    finally{
+      const timerId = setTimeout(()=>{
+        setShowError(false);
+      },2500)
+    }
+  }
+
+
+
+
+  return(
+    <>
+      {showError && (<div style={backdropStyle} ><div style={boxStyle}>Invalid Credentials.. Please check and try again</div></div>) }
+      <label>Email: </label>
+      <input type="text" value ={email} onChange={(e)=> setEmail(e.target.value)}/>
+      <br />
+      <label>Password: </label>
+      <input type="password" value ={password} onChange={(e)=> setPassword(e.target.value)}/>  
+      <br />  
+      <button onClick={handleAccountLogin}>Submit</button>
+      <pre>No Account ?</pre>
+      <Link to="/signup"><h6>Create Account</h6></Link>
+    </>
+  );
+}
+
+
+```
+
+FILE: src/pages/SignupPage.jsx
+```
+import {backdropStyle,boxStyle} from "../assets/errorBox"
+
+
+
+
+
+
+
+
+import {useState,useEffect} from "react"
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
+
+export function SignUpPage (){
+  const [email,setEmail]= useState("")
+  const [password,setPassword]= useState("")
+  const [firstName,setfirstName]= useState("")
+  const [lastName,setlastName]= useState("")
+  const [showError,setShowError]=useState(false);
+  const navigate = useNavigate();
+
+  async function handleAccountCreation() {
+    try{
+      const res = await axios.post("/api/auth/signup",{email,password,firstName,lastName});
+      return navigate("/dashboard", {replace:true});
+    }
+
+    catch(err){
+      setShowError(true);
+      console.log(err);
+    }
+    
+    finally{
+      const timerId = setTimeout(()=>{
+        setShowError(false);
+      },2500)
+    }
+  }
+
+
+
+  return(
+    <>
+
+      {showError && (<div style={backdropStyle}>
+        <div style={boxStyle}>Invalid Entries ... Please try again !</div>
+      </div>)}
+
+      <label>First Name: </label>
+      <input type="text" value ={firstName} onChange={(e)=> setfirstName(e.target.value)}/>
+      <br />
+      <label>Last Name: </label>
+      <input type="text" value ={lastName} onChange={(e)=> setlastName(e.target.value)}/>
+      <br />
+      <label>Email: </label>
+      <input type="text" value ={email} onChange={(e)=> setEmail(e.target.value)}/>
+      <br />
+      <label>Password: </label>
+      <input type="text" value ={password} onChange={(e)=> setPassword(e.target.value)}/>  
+      <br />  
+      {/* <label>Confirm Password: </label>
+      <input type="text" />  
+      <br />   */}
+      <button onClick={handleAccountCreation}>Create Account</button>
+    </>
+  );
+}
+
+
+
+
+```
+
+FILE: src/pages/DashBoard.jsx
+```
+import {useState,useEffect} from "react"
+import { useNavigate,useLoaderData,RouterProvider,createBrowserRouter, Routes, Route,Outlet,Navigate } from "react-router-dom";
+
+
+
+export function CreateDashBoardPage(){
+  const navigate = useNavigate();
+
+  const {groupData,positiveBalance,negativeBalance} = useLoaderData();
+  
+
+  return (
+    <>
+      Welcome User
+      <br />
+      Your Groups : 
+      {(groupData.length==0) ? "you are not in any group" : groupData.map((value)=>{
+        return (<>
+          <div key={value}>
+            {value.groupName}
+            <button onClick={()=>navigate(`/groupDetails/${value.gId}`)}>View Group</button>
+          </div>
+        </>)
+      })}
+
+      <br />
+      <h2>You are owed : {positiveBalance}</h2>
+      <h2>You are owe : {negativeBalance}</h2>
+      <h2></h2>
+      <button onClick={()=>{navigate("/createGroups")}}>Create Group</button>
+      <button onClick={()=>{}}>Join Group</button>
+    </>
+  );
+}
+
+```
+
+FILE: src/pages/CreateGroups.jsx
+```
+import {backdropStyle,boxStyle} from "../assets/errorBox"
+import {useState,useEffect} from "react"
+import {useNavigate} from "react-router-dom"
+import axios from "axios"
+
+export function CreateGroupForm(){
+    const navigate = useNavigate();
+
+    const [groupName, setGroupName]= useState("");
+    const [showError, setShowError]=useState(false);
+
+    async function createGroup (){
+        try{
+            console.log(groupName);
+            const res = await axios.post("/api/groups/create",{groupName});
+            const groupId=res.data._id;
+            return navigate(`/groupDetails/${groupId}`)
+        }
+        catch(err){
+            setShowError(true);
+        }
+        finally{
+            setTimeout(()=>{
+                setShowError(false);
+            },2500)
+        }
+    }
+
+    return (
+        <>
+            {showError && <div style={backdropStyle}><div style={boxStyle}>The group name is invalid </div></div>}
+            <h1>Create New Group</h1>
+            <h3>Enter Group Name: </h3>
+            <input type="text" onChange={(e)=>{setGroupName(e.target.value)}}/>
+            <button onClick={createGroup}>Create Group</button>
+        </>
+    )
+}
+
+```
+
+FILE: src/pages/JoinGroup.jsx
+```
+import {backdropStyle,boxStyle} from "../assets/errorBox"
+import {useNavigate} from 'react-router-dom'
+import {useState} from 'react'
+import axios from 'axios'
+
+export function JoinGroup(){
+    const navigate = useNavigate();
+    const [showError,setShowError]= useState(false);
+    const [showSuccessBox,setShowSuccessBox]= useState(false);
+    const [inviteCode,setInviteCode]=useState("");
+
+    async function joinInvitedGroup(){
+        try{
+            const res = await axios.get(`/api/groups/join/${inviteCode}`);
+            setShowSuccessBox(true);
+            setTimeout(()=>
+                {
+                    setShowSuccessBox(false)
+                    navigate(`/groupDetails/${res.data}`)
+                }
+            ,3000)
+        }
+        catch(err){
+            setShowError(true);
+            console.log(err);
+        }
+        finally{
+            setTimeout(()=>{
+                setShowError(false);
+            },2500)
+        }
+    }
+
+
+
+    return (
+        <>
+            {showError && <div style={backdropStyle}><div style={boxStyle}>Sorry , Not a valid invite code ! </div></div>}
+            {showSuccessBox && <div style={backdropStyle}><div style={boxStyle}>Invite Code Verified ! <br /> Successfully joined the group </div></div>}
+            You can join a group by their Refferal Link
+            <br />
+            <br />
+            <label >Enter Invite Code: </label>
+            <input type="text" onChange ={(e)=>{setInviteCode(e.target.value)}}/>
+            <button onClick={joinInvitedGroup}>Join Group</button>
+        </>
+    )
+}
+
+```
+
+FILE: src/pages/ViewGroup.jsx
+```
+import axios from "axios";
+import {useParams,useLoaderData,useNavigate} from "react-router-dom";
+import {useState} from 'react'
+
+export function ShowGroupDetails(){
+    const navigate= useNavigate();
+    const {groupId} = useParams();
+    const {groupDetails,groupTransactionData,userExpenseInGroup} = useLoaderData();
+
+    const [showSettlements,setShowSettlements] = useState(false);
+    const [settlements,setSettlements] = useState([]);
+
+    async function getSettlements(){
+        try{
+            const res = await axios.get(`/api/${groupId}/settlements`)
+            const afterSettlementData= res.data 
+            console.log(Array.isArray(afterSettlementData));
+            setShowSettlements(true)
+            setSettlements(afterSettlementData)
+        }
+        catch{
+
+        }
+    }
+
+    
+    console.log(groupTransactionData)
+    return(
+        <>
+            <h1>Group Details: </h1>
+            <h2>
+                Group Name: {groupDetails.groupName} <br />
+                Invite Code : {groupDetails.inviteCode}<br />
+                Created By : {groupDetails.createdBy.firstName}<br />
+                Members : {groupDetails.members.map(value=>value.firstName+", ")}<br />
+                Created On :  {groupDetails.createdAt}
+            </h2>
+            <button onClick={()=>navigate(`/${groupId}/addExpense`)}>Add Expense</button>
+
+            <h2>{(userExpenseInGroup>=0)? `Your credit in this group : ${userExpenseInGroup}`: `Your debt in this group : ${userExpenseInGroup}`} </h2>
+
+            <h1> Group Expenses : </h1>  
+
+            {typeof(groupTransactionData)!="object" ? "No expenses till now !" : 
+            groupTransactionData.map((value)=>{
+                return (
+                    <>
+                        <br />
+                        Description : {value.description}
+                        <br />
+                        Amount : {value.amount}
+                        <br />
+                        Paid By : {value.paidBy.firstName}
+                        <br />
+                        Split Among : {value.splitAmong.map((member)=>member.firstName+" ")}
+                        <br />
+                    </>
+
+                )
+            })}
+
+            <h1><button onClick={getSettlements}>Settle Expenses </button></h1>
+
+            {showSettlements && settlements.map((value)=>{return(<>
+            <br />
+                From: {value.from.firstName}
+            <br />
+                To: {value.to.firstName}
+            <br />
+                Amount:{value.amount}
+            <br />
+            </>)})}
+            <button>Home</button>
+        </>
+    );
+}
+
+```
+
+FILE: src/pages/AddExpense.jsx
+```
+import { useState } from "react";
+import {backdropStyle,boxStyle} from "../assets/errorBox"
+import {useNavigate} from 'react-router-dom'
+
+
+export function AddExepense(){
+
+    const [description,setDescription]=useState("");
+    const [amount,setAmount]=useState(0);
+    const [participants,setParticipants]=useState([]);
+    const [showSuccessBox,setShowSuccessBox]= useState(false);
+    const [showError,setShowError]= useState(false);
+    const navigate=useNavigate();
+
+    async function createExpense() {
+        try{
+            const res = await axios.post("/api/group/");
+            // navigate ()
+        }
+
+        catch(err){
+            setShowError(true);
+        }
+        finally{
+            const timerId = setTimeout(()=>{
+                setShowError(false);
+            },2500)
+        }
+    }
+
+
+
+
+    return (
+        <>
+            {showError && (<div style={backdropStyle} ><div style={boxStyle}>Invalid Credentials.. Please check and try again</div></div>) }
+            {showSuccessBox && <div style={backdropStyle}><div style={boxStyle}>Invite Code Verified ! <br /> Successfully joined the group </div></div>}
+            
+            <label>Description</label>
+            <input type="text" onChange={(e)=>{setDescription(e.target.value)}}/>
+            <br />
+            <label>Amount</label>
+            <input type="text" onChange={(e)=>{setAmount(e.target.value)}}/>
+            <br />
+            <label>Participants</label>
+            <input type="text" onChange={(e)=>{setParticipants(e.target.value)}}/>
+            <br />
+            <button onClick={createExpense}>Create Expense</button>
+        </>
+    )
+}
+```
+
+FILE: src/pages/HomePage.jsx
+```
+
+```
+
+FILE: src/pages/ExpenseList.jsx
+```
+import axios from 'axios';
+
+
+export function showExpenses(groupId){
+
+
+
+    return(
+
+    )
+}
+```
+
+FILE: src/pages/GroupPage.jsx
+```
+
+```
+
+FILE: src/pages/Settlements.jsx
+```
+
+```
+

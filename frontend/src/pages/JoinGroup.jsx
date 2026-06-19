@@ -9,7 +9,8 @@ export function JoinGroup(){
     const [showSuccessBox,setShowSuccessBox]= useState(false);
     const [inviteCode,setInviteCode]=useState("");
 
-    async function joinInvitedGroup(){
+    async function joinInvitedGroup(e){
+        e.preventDefault()
         try{
             const res = await axios.get(`/api/groups/join/${inviteCode}`);
             setShowSuccessBox(true);
@@ -22,28 +23,53 @@ export function JoinGroup(){
         }
         catch(err){
             setShowError(true);
-            console.log(err);
-        }
-        finally{
-            setTimeout(()=>{
-                setShowError(false);
-            },2500)
+            setTimeout(()=>setShowError(false),2500)
         }
     }
 
 
+  return (
+    <div className="page-container">
+      <div className="form-container">
+        <div className="card">
+          <div className="text-center mb-3">
+            <h1 style={{ fontSize: '24px', marginBottom: '8px' }}>Join a Group</h1>
+            <p className="text-muted">Enter the invite code to join an existing group</p>
+          </div>
 
-    return (
-        <>
-            {showError && <div style={backdropStyle}><div style={boxStyle}>Sorry , Not a valid invite code ! </div></div>}
-            {showSuccessBox && <div style={backdropStyle}><div style={boxStyle}>Invite Code Verified ! <br /> Successfully joined the group </div></div>}
-            You can join a group by their Refferal Link
-            <br />
-            <br />
-            <label >Enter Invite Code: </label>
-            <input type="text" onChange ={(e)=>{setInviteCode(e.target.value)}}/>
-            <button onClick={joinInvitedGroup}>Join Group</button>
-        </>
-    )
+          {showError && (
+            <div className="alert alert-error">
+              <span>⚠️</span>
+              Invalid invite code. Please check and try again.
+            </div>
+          )}
+
+          {showSuccessBox && (
+            <div className="alert alert-success">
+              <span>✅</span>
+              Successfully joined the group! Redirecting...
+            </div>
+          )}
+
+          <form onSubmit={joinInvitedGroup}>
+            <div className="form-group">
+              <label className="form-label">Invite Code</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Enter invite code"
+                value={inviteCode}
+                onChange={(e) => setInviteCode(e.target.value)}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+              Join Group
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
 }
-

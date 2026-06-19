@@ -1,10 +1,9 @@
-import { useState } from "react";
-import {backdropStyle,boxStyle} from "../assets/errorBox"
-import {useNavigate} from 'react-router-dom'
-
+import { useState } from "react"
+import { useNavigate, useParams } from 'react-router-dom'
+import axios from "axios"
 
 export function AddExepense(){
-
+    const {groupId} =useParams();
     const [description,setDescription]=useState("");
     const [amount,setAmount]=useState(0);
     const [participants,setParticipants]=useState([]);
@@ -12,19 +11,16 @@ export function AddExepense(){
     const [showError,setShowError]= useState(false);
     const navigate=useNavigate();
 
-    async function createExpense() {
+    async function createExpense(e) {
+      e.preventDefault()
         try{
-            const res = await axios.post("/api/group/");
-            // navigate ()
+          const res = await axios.post("/api/group/",{description,amount:Number(amount)});
+          navigate (`/api/${groupId}/expense`)
         }
 
         catch(err){
-            setShowError(true);
-        }
-        finally{
-            const timerId = setTimeout(()=>{
-                setShowError(false);
-            },2500)
+          setShowError(true);
+          const timerId = setTimeout(()=>setShowError(false),2500)
         }
     }
 
@@ -32,20 +28,62 @@ export function AddExepense(){
 
 
     return (
-        <>
-            {showError && (<div style={backdropStyle} ><div style={boxStyle}>Invalid Credentials.. Please check and try again</div></div>) }
-            {showSuccessBox && <div style={backdropStyle}><div style={boxStyle}>Invite Code Verified ! <br /> Successfully joined the group </div></div>}
-            
-            <label>Description</label>
-            <input type="text" onChange={(e)=>{setDescription(e.target.value)}}/>
-            <br />
-            <label>Amount</label>
-            <input type="text" onChange={(e)=>{setAmount(e.target.value)}}/>
-            <br />
-            <label>Participants</label>
-            <input type="text" onChange={(e)=>{setParticipants(e.target.value)}}/>
-            <br />
-            <button onClick={createExpense}>Create Expense</button>
-        </>
+      <div className="page-container">
+        <div className="form-container">
+          <div className="card">
+            <div className="text-center mb-3">
+              <h1 style={{ fontSize: '24px', marginBottom: '8px' }}>Add New Expense</h1>
+              <p className="text-muted">Record a new expense for the group</p>
+            </div>
+
+            {showError && (
+              <div className="alert alert-error">
+                <span>⚠️</span>
+                Error creating expense. Please try again.
+              </div>
+            )}
+
+            <form onSubmit={createExpense}>
+              <div className="form-group">
+                <label className="form-label">Description</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="What was this expense for?"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Amount (₹)</label>
+                <input
+                  type="number"
+                  className="form-input"
+                  placeholder="Enter amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="btn-group">
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
+                  Add Expense
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-outline" 
+                  style={{ flex: 1 }}
+                  onClick={() => navigate(`/groupDetails/${groupId}`)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     )
 }

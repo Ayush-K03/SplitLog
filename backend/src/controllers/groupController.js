@@ -88,7 +88,7 @@ export async function showMyGroups(req,res){
             return res.status(401).send("You are not part of any group");
         }
         console.log("User specific groups were shown !");
-        res.status(200).json(groups.map((value)=>({groupName: value.groupName,gId:value._id})));
+        res.status(200).json(groups.map((value)=>({groupName: value.groupName,gId:value._id,memberCount:value.members.length})));
 
     }
 
