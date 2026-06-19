@@ -32,24 +32,10 @@ export async function addExpense(req, res) {
 export async function showExpenses(req, res) {
   try {
     const expenses = await Expense.find({ groupId: req.params.groupId }).populate('paidBy splitAmong' , 'firstName');
-    if (expenses.length === 0)
-      return res.status(200).send("No expenses created till now ....");
+    if (expenses.length === 0) return res.status(200).json([]);
     res.status(200).json(expenses);
 
-    // //fetch expense of current user is part of
-    // const expenses = await expense.find({splitAmong: req.user.userId})
-    // .populate('paidBy','firstName')
-    // .populate('splitAmong', 'firstName');
-
-    // if (!expenses){
-    //     console.log("No matching expense was found");
-    //     return res.send("No expense till now ");
-    // }
-    // console.log("User expenses were shown acc. !");
-    // console.log(expenses);
-    // res.json(expenses);
   } catch (err) {
-    console.log("an error 5 occured !");
     console.log(err);
     res.status(401).send("Error in showing transaction !");
   }
@@ -65,10 +51,11 @@ export async function checkIfUserBelongToGroup(req, res, next) {
 }
 
 export async function showIndiviualBalances (req,res){
-  const balanceSheet = await calculateBalances(req.params.groupId);
+  const balanceSheet = await calculateBalances(req.params.groupId,req.user.userId);
   console.log(balanceSheet)
   if (!balanceSheet) res.send("an error 89 occured");
   const userExpenseInGroup = balanceSheet[req.user.userId];
+
   res.json({balanceSheet,userExpenseInGroup});
 }
 
@@ -78,7 +65,7 @@ export async function showIndiviualBalances (req,res){
 
 
 export async function showSettlements(req,res){
-  const balanceSheet = await calculateBalances(req.params.groupId);
+  const balanceSheet = await calculateBalances(req.params.groupId,req.params.userId);
   const creditors={};
   const debtors={};
 
@@ -146,7 +133,7 @@ export async function userExpenseAcrossGroups(req,res){
     let negativeBalance=0;
     for( const value of groupInfo){
       console.log(value)
-      const balance = await calculateBalances(value._id);
+      const balance = await calculateBalances(value._id,req.user.userId);
       console.log(balance)
       const financialStatus = balance[req.user.userId] ?? 0;
       console.log(financialStatus);

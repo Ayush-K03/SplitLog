@@ -76,6 +76,22 @@ function ProtectedRoute(){
   const navigate=useNavigate();
   const [isLoading,setIsLoading] = useState(true);
   const [isAuthenticated,setIsAuthenticated] = useState(false);
+
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light')
+  }
+
+
+
   useEffect(()=>{
     async function checkAuth(){
       try{
@@ -122,6 +138,13 @@ function ProtectedRoute(){
               <a href="/dashboard">Dashboard</a>
               <a href="/createGroups">Create Group</a>
               <a href="/joinGroup">Join Group</a>
+              <button 
+                onClick={toggleTheme}
+                className="btn-icon"
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? '🌙' : '☀️'}
+              </button>
             </nav>
           </div>
         </header>

@@ -1,4 +1,4 @@
-import { useNavigate,useLoaderData } from "react-router-dom";
+import { useNavigate,useLoaderData } from "react-router-dom"
 
 export function CreateDashBoardPage() {
   const navigate = useNavigate()
@@ -38,7 +38,7 @@ export function CreateDashBoardPage() {
           <h2 className="card-title">Your Groups</h2>
         </div>
 
-        
+
         {groupData.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">👥</div>
@@ -52,7 +52,7 @@ export function CreateDashBoardPage() {
           </div>
         ) : (
           <div className="list-container">
-            {console.log(groupData)};
+            {console.log(groupData)}
             {groupData.map((group) => (
               <div key={group.gId} className="list-item">
                 <div className="list-item-content">

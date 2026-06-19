@@ -1,13 +1,15 @@
 import { Groups } from "../models/Group.js";
 import { Expense } from "../models/Expense.js";
 
-export async function calculateBalances (groupId){
+export async function calculateBalances (groupId,userId){
   try {
+    const balances={};
+    balances[userId]=0;
+    
     const expenses= await Expense.find({groupId: groupId});
-    if (expenses.length===0) return {message:"No expenses till now ! " };
+    if (expenses.length===0) return(balances);
     
     const group= await Groups.findById(groupId).populate('members','firstName');
-    const balances={};
     //initial amount 0 ;
     group.members.map((eachMember)=>balances[eachMember._id]=0 );
     
