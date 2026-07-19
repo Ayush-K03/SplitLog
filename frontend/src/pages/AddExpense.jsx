@@ -14,8 +14,8 @@ export function AddExepense(){
     async function createExpense(e) {
       e.preventDefault()
         try{
-          const res = await axios.post("/api/group/",{description,amount:Number(amount)});
-          navigate (`/api/${groupId}/expense`)
+          const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/group/`,{description,amount:Number(amount)});
+          navigate (`${import.meta.env.BACKEND_URL}/api/${groupId}/expense`)
         }
 
         catch(err){

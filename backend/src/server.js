@@ -1,5 +1,9 @@
 import express from "express";
 import cookieParser from 'cookie-parser';
+
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { connectToDatabase } from "./config/db.js";
 import { userRouter } from "./routes/authRoutes.js";
 import { displayHomepage } from "./controllers/authController.js";
@@ -10,7 +14,7 @@ import { verifyCheck } from "./config/verification.js";
 
 const app=express();
 
-const port= 8000;
+const port= process.env.PORT || 3000;
 
 app.listen(port,() => console.log(`http://localhost:${port}`));
 connectToDatabase();

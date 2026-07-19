@@ -3,6 +3,16 @@ import { Expense } from "../models/Expense.js";
 import { calculateBalances } from "../config/balanceCalc.js";
 import {User} from "../models/User.js"
 
+export async function checkIfUserBelongToGroup(req, res, next) {
+  const groupExsist = await Groups.findById(req.params.groupId);
+  if (!groupExsist) return res.status(200).send("Suchhhhh group does not exsist");
+  const userInGroup = groupExsist.members.includes(req.user.userId);
+  if (!userInGroup)
+    return res.status(403).send("You do not belong to this group");
+  else next();
+}
+
+
 export async function addExpense(req, res) {
   try {
     if (
@@ -41,14 +51,6 @@ export async function showExpenses(req, res) {
   }
 }
 
-export async function checkIfUserBelongToGroup(req, res, next) {
-  const groupExsist = await Groups.findById(req.params.groupId);
-  if (!groupExsist) return res.status(200).send("Suchhhhh group does not exsist");
-  const userInGroup = groupExsist.members.includes(req.user.userId);
-  if (!userInGroup || !groupExsist)
-    return res.status(403).send("You do not belong to this group");
-  else next();
-}
 
 export async function showIndiviualBalances (req,res){
   const balanceSheet = await calculateBalances(req.params.groupId,req.user.userId);
@@ -61,68 +63,6 @@ export async function showIndiviualBalances (req,res){
 
 // add someone who is not in group , in balance object 
 // then you have to show them as external while givig back the result 
-
-
-
-export async function showSettlements(req,res){
-  const balanceSheet = await calculateBalances(req.params.groupId,req.params.userId);
-  const creditors={};
-  const debtors={};
-
-
-  Object.entries(balanceSheet).map(([person,amount]) => {
-    if (amount>0) creditors[person]=amount;
-    else debtors[person]=-amount;
-  });
-
-  const creditChart= Object.entries(creditors).map(([user,amount])=>({user,amount}));
-  const debitChart= Object.entries(debtors).map(([user,amount])=>({user,amount}));
-  // const debitChart= Object.entries(debtors);
-  
-  creditChart.sort((a,b)=> b.amount-a.amount);
-  debitChart.sort((a,b)=> b.amount-a.amount);
-
-
-  const settlements=[];
-  let creditorPointer =0; let debitorPointer=0;
-
-  while (creditorPointer<creditChart.length && debitorPointer<debitChart.length){
-    const currentCreditor = creditChart[creditorPointer];
-    const currentDebitor = debitChart[debitorPointer];
-  
-    if (Math.min(currentCreditor.amount,currentDebitor.amount)!=0){
-      settlements.push({from:currentDebitor.user,to:currentCreditor.user,amount : Math.min(currentCreditor.amount,currentDebitor.amount)});
-    }
-
-
-    if (currentDebitor.amount > currentCreditor.amount){
-      currentDebitor.amount-=currentCreditor.amount;
-      currentCreditor.amount=0;
-      creditorPointer++;
-    }
-
-    else{
-      currentCreditor.amount-=currentDebitor.amount;
-      currentDebitor.amount=0;
-      debitorPointer++;
-    }
-    
-  }
-
-  await User.populate(settlements,{path:'from to',select:'firstName lastName'});
-
-  settlements.map(value=>{
-    console.log(`${value.from.firstName} needs to pay ${value.to.firstName} : ₹ ${value.amount}`);
-  })
-  console.log(settlements);
-  res.json(settlements)
-  // res.json(creditors);
-}
-
-
-
-
-
 export async function userExpenseAcrossGroups(req,res){
     const groupInfo = await Groups.find({members: req.user.userId});
     if (!groupInfo.length){
@@ -132,13 +72,11 @@ export async function userExpenseAcrossGroups(req,res){
     let positiveBalance=0;
     let negativeBalance=0;
     for( const value of groupInfo){
-      console.log(value)
       const balance = await calculateBalances(value._id,req.user.userId);
-      console.log(balance)
       const financialStatus = balance[req.user.userId] ?? 0;
       console.log(financialStatus);
       if ( financialStatus>0) positiveBalance+= financialStatus;
-      else negativeBalance+=Math.abs(financialStatus);
+      else negativeBalance -= financialStatus;
     }
     console.log(req.user.userId)
     res.json({positiveBalance,negativeBalance});

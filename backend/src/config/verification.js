@@ -1,4 +1,4 @@
-const secretKey= "youCANdoIT!";
+const secretKey= process.env.JWT_SECRET_KEY;
 import jwt from 'jsonwebtoken';
 
 export function verifyCheck(req,res,next){

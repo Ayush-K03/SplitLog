@@ -12,7 +12,7 @@ export function JoinGroup(){
     async function joinInvitedGroup(e){
         e.preventDefault()
         try{
-            const res = await axios.get(`/api/groups/join/${inviteCode}`);
+            const res = await axios.get(`${import.meta.env.BACKEND_URL}/api/groups/join/${inviteCode}`);
             setShowSuccessBox(true);
             setTimeout(()=>
                 {

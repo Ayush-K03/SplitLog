@@ -23,7 +23,8 @@ export async function createUserInDatabase(req, res) {
     console.log("User was created !");
     tokenGeneration(user, res);
     res.status(201).json("Success !");
-  } catch (error) {
+  } 
+  catch (error) {
     console.log("Error in creation of user!");
     console.log(error);
     res.status(400).send("Bad Input !");
@@ -31,11 +32,9 @@ export async function createUserInDatabase(req, res) {
 }
 
 export async function handleUserLogin(req, res) {
-      if (
-      req.body.email.length===0||
-      req.body.password.length===0
-    ) 
-    return res.status(400).send("Invalid Details... Try again"); 
+  //checking validity of input
+  if ( req.body.email.length===0|| req.body.password.length===0) return res.status(400).send("Invalid Details... Try again"); 
+
   const user = await User.findOne({ email: req.body.email });
   if (!user) res.status(401).send("InValid Credentials !");
   const passwordValidation = await bcrypt.compare(

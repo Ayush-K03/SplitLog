@@ -13,7 +13,7 @@ export function SignUpPage (){
 
   async function handleAccountCreation() {
     try{
-      const res = await axios.post("/api/auth/signup",{email,password,firstName,lastName});
+      const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/auth/signup`,{email,password,firstName,lastName});
       return navigate("/dashboard", {replace:true});
     }
 

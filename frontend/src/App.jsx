@@ -16,10 +16,12 @@ import { CreateGroupForm } from "./pages/CreateGroups";
 import { ShowGroupDetails } from "./pages/ViewGroup";
 import { JoinGroup } from "./pages/JoinGroup";
 import { AddExepense } from "./pages/AddExpense";
+import { ShowPastSettlements } from "./pages/PastSettlement";
+import { getDataForSettlement } from "./loaders/pastSettlementLoader";
 
 
 const root = createRoot(document.getElementById("root"));
-let user ={};
+export let user ={};
 
 const myMainRouter = createBrowserRouter([
   {
@@ -49,6 +51,11 @@ const myMainRouter = createBrowserRouter([
       {
         path: "/joinGroup",
         element: <JoinGroup />
+      },
+      {
+        path : "/pastSettlement",
+        element : <ShowPastSettlements/>,
+        loader : getDataForSettlement
       },
       {
         path: "/groupDetails/:groupId",
@@ -95,11 +102,12 @@ function ProtectedRoute(){
   useEffect(()=>{
     async function checkAuth(){
       try{
-        const res= await axios.get("/api/verify");
+        const res= await axios.get(`${import.meta.env.BACKEND_URL}/api/verify`);
 
         if (res.data.isAuthenticated){
           setIsAuthenticated(true);
           user= res.data.user;
+          console.log(user);
         }
       }
       catch(err){
@@ -138,6 +146,7 @@ function ProtectedRoute(){
               <a href="/dashboard">Dashboard</a>
               <a href="/createGroups">Create Group</a>
               <a href="/joinGroup">Join Group</a>
+              <a href="/pastSettlement">Past Settlements</a>
               <button 
                 onClick={toggleTheme}
                 className="btn-icon"

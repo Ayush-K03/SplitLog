@@ -4,14 +4,13 @@ import axios from "axios";
 
 export function CreateGroupForm() {
   const navigate = useNavigate();
-
   const [groupName, setGroupName] = useState("");
   const [showError, setShowError] = useState(false);
 
   async function createGroup(e) {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/groups/create", { groupName });
+      const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/groups/create`, { groupName });
       const groupId = res.data._id;
       return navigate(`/groupDetails/${groupId}`);
     } catch (err) {

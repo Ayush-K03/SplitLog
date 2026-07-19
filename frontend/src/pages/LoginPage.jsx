@@ -11,7 +11,7 @@ export function LoginPage (){
 
   async function handleAccountLogin() {
     try{
-      const res = await axios.post("/api/auth/login",{email,password});
+      const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/auth/login`,{email,password});
       return navigate("/dashboard",{replace:true})
     }
     catch(err){

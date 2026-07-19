@@ -1,6 +1,7 @@
 import axios from "axios"
 import { useParams, useLoaderData, useNavigate } from "react-router-dom"
 import { useState } from 'react'
+import { user } from "../App";
 
 export function ShowGroupDetails(){
     const navigate= useNavigate();
@@ -9,17 +10,32 @@ export function ShowGroupDetails(){
 
     const [showSettlements,setShowSettlements] = useState(false);
     const [settlements,setSettlements] = useState([]);
+    const [userBalance,setUserBalance] = useState(userExpenseInGroup);
 
     async function getSettlements(){
         try{
-          const res = await axios.get(`/api/${groupId}/settlements`)
+          const res = await axios.get(`${import.meta.env.BACKEND_URL}/api/${groupId}/settlements`)
           const afterSettlementData= res.data 
           setShowSettlements(true)
           setSettlements(afterSettlementData)
         }
-        catch{
+        catch(err){
           console.log(err)  
         }
+    }
+
+    async function doSettlement(from,to,amount){
+      try{
+        const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount})
+        // const newData = await fetchGroupList({ params: { groupId } });
+        
+        getSettlements()
+        setUserBalance(userBalance+amount);
+
+      }
+      catch (err){
+        console.log(err)
+      }
     }
 
   return (
@@ -128,6 +144,9 @@ export function ShowGroupDetails(){
                     <div style={{ fontWeight: 500, color: 'var(--accent-success)' }}>
                       ₹{settlement.amount}
                     </div>
+                    <div>
+                      {settlement.from._id===user.userId && <button onClick={()=>doSettlement(settlement.from._id,settlement.to._id,settlement.amount)}>Mark as paid</button>}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -141,13 +160,13 @@ export function ShowGroupDetails(){
           </div>
           <div className="text-center">
             <div className="stat-label mb-1">
-              {userExpenseInGroup >= 0 ? 'You are owed' : 'You owe'}
+              {userBalance >= 0 ? 'You are owed' : 'You owe'}
             </div>
             <div 
-              className={`stat-value ${userExpenseInGroup >= 0 ? 'positive' : 'negative'}`}
+              className={`stat-value ${userBalance >= 0 ? 'positive' : 'negative'}`}
               style={{ fontSize: '36px' }}
             >
-              ₹{Math.abs(userExpenseInGroup)}
+              ₹{Math.abs(userBalance)}
             </div>
           </div>
           <button 
