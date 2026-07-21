@@ -1,4 +1,6 @@
+import dotenv from 'dotenv/config';
 import mongoose from "mongoose";
+
 export async function connectToDatabase(){
     try{
         console.log("Connection in progress...");

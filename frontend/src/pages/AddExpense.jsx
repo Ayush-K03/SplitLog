@@ -1,15 +1,26 @@
 import { useState } from "react"
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLoaderData } from 'react-router-dom'
 import axios from "axios"
+axios.defaults.withCredentials = true;
 
 export function AddExepense(){
     const {groupId} =useParams();
     const [description,setDescription]=useState("");
     const [amount,setAmount]=useState(0);
-    const [participants,setParticipants]=useState([]);
     const [showSuccessBox,setShowSuccessBox]= useState(false);
     const [showError,setShowError]= useState(false);
+    const [participantListOpen,setParticipantListOpen]= useState(false);
+    const [userList , setUserList] = useState([]);
     const navigate=useNavigate();
+    const {participantsDetails} = useLoaderData();
+
+
+    async function updateUserList(userId){
+      if (userList.includes(userId)){
+        setUserList(userList.filter(id => id!==userId ));
+      }
+      else setUserList([...userList,userId]);
+    }
 
     async function createExpense(e) {
       e.preventDefault()
@@ -43,6 +54,13 @@ export function AddExepense(){
               </div>
             )}
 
+            {showSuccessBox && (
+              <div className="alert alert-success">
+                <span>✅</span>
+                Expense creation success. Redirecting you....
+              </div>
+            )}
+
             <form onSubmit={createExpense}>
               <div className="form-group">
                 <label className="form-label">Description</label>
@@ -66,6 +84,22 @@ export function AddExepense(){
                   onChange={(e) => setAmount(e.target.value)}
                   required
                 />
+              </div>
+
+              <div>
+                <label>Split Among :</label>
+                <div className="dropdown-menu">
+                  <button type ="button" onClick={()=>setParticipantListOpen(prev=>!prev)}>Select members V</button>
+                  {participantListOpen && participantsDetails.map( eachUser => {
+                    return(
+                    <div className="dropdown-items" key={eachUser._id}>
+                      <input type="checkbox" value={eachUser.first_name} onChange={(e)=> updateUserList(eachUser._id)} />
+                      <label>{eachUser.firstName}</label>
+                      <br />
+                    </div>
+                    )
+                  })}
+                </div>
               </div>
 
               <div className="btn-group">
