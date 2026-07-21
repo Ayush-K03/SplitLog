@@ -1,14 +1,15 @@
 import axios from "axios"
+axios.defaults.withCredentials = true;
 import {useState,useEffect} from "react"
-
 import {createRoot} from "react-dom/client"
-import { useLoaderData,RouterProvider,createBrowserRouter,Outlet,useNavigate } from 'react-router-dom';
+import { Link,useLoaderData,RouterProvider,createBrowserRouter,Outlet,useNavigate } from 'react-router-dom';
 
 import { LoginPage } from "./pages/LoginPage";
 import {SignUpPage} from "./pages/SignupPage"
 import { CreateDashBoardPage } from "./pages/DashBoard";
 
 import { fetchGroupList } from "./loaders/indiviualGroupLoader";
+import { participantsList } from "./loaders/fetchParticipant"; 
 import { dashBoardLoad } from "./loaders/dashBoardLoader";
 
 
@@ -64,7 +65,8 @@ const myMainRouter = createBrowserRouter([
       },
       {
         path: "/:groupId/addExpense",
-        element: <AddExepense />
+        element: <AddExepense />,
+        loader: participantsList
       },
       {
         path: "/:groupId/expense_list",
@@ -102,7 +104,7 @@ function ProtectedRoute(){
   useEffect(()=>{
     async function checkAuth(){
       try{
-        const res= await axios.get(`${import.meta.env.BACKEND_URL}/api/verify`);
+        const res= await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify`);
 
         if (res.data.isAuthenticated){
           setIsAuthenticated(true);
@@ -132,37 +134,42 @@ function ProtectedRoute(){
   }
 
   console.log(isAuthenticated,"is valid !");
-
-  if (isAuthenticated) {
-    return(
-      <div className="app-container">
-        <header className="app-header">
-          <div className="header-content">
-            <a href="/dashboard" className="header-logo">
-              <span className="logo-icon">💰</span>
-              SplitLog
-            </a>
-            <nav className="header-nav">
-              <a href="/dashboard">Dashboard</a>
-              <a href="/createGroups">Create Group</a>
-              <a href="/joinGroup">Join Group</a>
-              <a href="/pastSettlement">Past Settlements</a>
-              <button 
-                onClick={toggleTheme}
-                className="btn-icon"
-                aria-label="Toggle theme"
-              >
-                {theme === 'light' ? '🌙' : '☀️'}
-              </button>
-            </nav>
-          </div>
-        </header>
-        <Outlet />
-      </div>
-    )
+  try {
+    if (isAuthenticated) {
+      return(
+        <div className="app-container">
+          <header className="app-header">
+            <div className="header-content">
+              <Link to="/dashboard" className="header-logo">
+                <span className="logo-icon">💰</span>
+                SplitLog
+              </Link>
+              <nav className="header-nav">
+                <Link to="/dashboard">Dashboard</Link>
+                <Link to="/createGroups">Create Group</Link>
+                <Link to="/joinGroup">Join Group</Link>
+                <Link to="/pastSettlement">Past Settlements</Link>
+                <button 
+                  onClick={toggleTheme}
+                  className="btn-icon"
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'light' ? '🌙' : '☀️'}
+                </button>
+              </nav>
+            </div>
+          </header>
+          <Outlet />
+        </div>
+      )
+    }
   }
-
-  else navigate("/login", {replace:true} );
+  catch (err){
+    console.log(err);
+  }
+  finally{
+    if (!isAuthenticated) navigate("/login", {replace:true} );
+  }
 }
 
 

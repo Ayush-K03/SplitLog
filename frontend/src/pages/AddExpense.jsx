@@ -25,8 +25,10 @@ export function AddExepense(){
     async function createExpense(e) {
       e.preventDefault()
         try{
-          const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/group/`,{description,amount:Number(amount)});
-          navigate (`${import.meta.env.BACKEND_URL}/api/${groupId}/expense`)
+          console.log(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/expenses`);
+          const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/expenses`,{description,amount: Math.round(Number(amount) * 100),splitAmong:userList});
+          setShowSuccessBox(true);
+          const timerId = setTimeout(()=>{navigate (`/groupDetails/${groupId}`)},3000);
         }
 
         catch(err){
@@ -35,8 +37,7 @@ export function AddExepense(){
         }
     }
 
-
-
+    // useEffect(()=>{},[])
 
     return (
       <div className="page-container">
@@ -92,10 +93,9 @@ export function AddExepense(){
                   <button type ="button" onClick={()=>setParticipantListOpen(prev=>!prev)}>Select members V</button>
                   {participantListOpen && participantsDetails.map( eachUser => {
                     return(
-                    <div className="dropdown-items" key={eachUser._id}>
-                      <input type="checkbox" value={eachUser.first_name} onChange={(e)=> updateUserList(eachUser._id)} />
+                    <div key={eachUser._id}>
+                      <input className="dropdown-items" type="checkbox" value={eachUser.first_name} onChange={(e)=> updateUserList(eachUser._id)} />
                       <label>{eachUser.firstName}</label>
-                      <br />
                     </div>
                     )
                   })}

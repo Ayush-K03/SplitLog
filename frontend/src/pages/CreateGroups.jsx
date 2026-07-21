@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+axios.defaults.withCredentials = true;
 
 export function CreateGroupForm() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export function CreateGroupForm() {
   async function createGroup(e) {
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/groups/create`, { groupName });
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/groups/create`, { groupName });
       const groupId = res.data._id;
       return navigate(`/groupDetails/${groupId}`);
     } catch (err) {

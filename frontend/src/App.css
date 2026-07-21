@@ -17,6 +17,13 @@
   }
 }
 
+.dropdown-menu {
+  position: relative;
+  width : 100%;
+  background-color: #ffffff;
+}
+
+
 .hero {
   position: relative;
 

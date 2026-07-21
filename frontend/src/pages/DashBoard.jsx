@@ -21,11 +21,11 @@ export function CreateDashBoardPage() {
       <div className="stats-grid">
         <div className="stat-card">
           <div className="stat-label">You are owed</div>
-          <div className="stat-value positive">₹{positiveBalance}</div>
+          <div className="stat-value positive">₹{(positiveBalance/ 100).toFixed(2)}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">You owe</div>
-          <div className="stat-value negative">₹{negativeBalance}</div>
+          <div className="stat-value negative">₹{(negativeBalance/ 100).toFixed(2)}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Total Groups</div>
@@ -53,6 +53,7 @@ export function CreateDashBoardPage() {
         ) : (
           <div className="list-container">
             {console.log(groupData)}
+            {console.log("Here billu ")}
             {groupData.map((group) => (
               <div key={group.gId} className="list-item">
                 <div className="list-item-content">

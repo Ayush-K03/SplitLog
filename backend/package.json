@@ -1,0 +1,28 @@
+{
+  "name": "splitlog",
+  "version": "1.0.0",
+  "description": "A project to split bills among your peers.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ./src/server.js"
+  },
+  "author": "Ayush",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "modules": "^0.4.0",
+    "mongoose": "^9.6.3",
+    "nodemon": "^3.1.14",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@ljharb/tsconfig": "^0.3.2"
+  }
+}

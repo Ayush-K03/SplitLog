@@ -35,13 +35,11 @@ export async function showUserGroup(req,res) {
     
     const gId = req.params.groupId;
     const group = await Groups.findById(gId).populate('createdBy members','firstName');
-
-    if (!mongoose.Types.ObjectId.isValid(gId) || !group){
-        console.log("No such group exsists");
-        return res.status(401).send("no such group exsist please create one !");
-    }
     
-    console.log(group);
+    if (group === null){
+        console.log("User tried to access a group that does not exist !");
+        return res.status(200).json(null);
+    }
     res.status(200).json(group);
     console.log("User found their group !");
 }
@@ -82,10 +80,11 @@ export async function joinGroup(req,res){
 
 export async function showMyGroups(req,res){
     try{
+        console.log("i was called");
         const groups= await Groups.find({members: req.user.userId});
         if (!groups){
             console.log("User does not belong to any group !");
-            return res.status(401).send("You are not part of any group");
+            return res.status(200).json({});
         }
         console.log("User specific groups were shown !");
         res.status(200).json(groups.map((value)=>({groupName: value.groupName,gId:value._id,memberCount:value.members.length})));

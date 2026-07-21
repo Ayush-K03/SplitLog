@@ -2,6 +2,7 @@ import {backdropStyle,boxStyle} from "../assets/errorBox"
 import {useNavigate} from 'react-router-dom'
 import {useState} from 'react'
 import axios from 'axios'
+axios.defaults.withCredentials = true;
 
 export function JoinGroup(){
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ export function JoinGroup(){
     async function joinInvitedGroup(e){
         e.preventDefault()
         try{
-            const res = await axios.get(`${import.meta.env.BACKEND_URL}/api/groups/join/${inviteCode}`);
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/groups/join/${inviteCode}`);
             setShowSuccessBox(true);
             setTimeout(()=>
                 {

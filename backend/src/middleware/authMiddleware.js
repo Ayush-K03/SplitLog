@@ -1,5 +1,7 @@
-const secretKey= process.env.JWT_SECRET_KEY;
+import dotenv from 'dotenv/config';
 import jwt from 'jsonwebtoken';
+
+const secretKey= process.env.JWT_SECRET_KEY;
 
 export function tokenGeneration (user,res){
     const payload = jwt.sign({
@@ -9,7 +11,7 @@ export function tokenGeneration (user,res){
     },secretKey,{expiresIn : "7d"});
 
     res.cookie('token',payload,
-        {httpOnly : true , maxAge : 7*24*60*60*1000,secure : true, sameSite : 'lax'}
+        {httpOnly : true , maxAge : 7*24*60*60*1000,secure : false, sameSite : 'lax'}
     );
     console.log("A token was generated and stored in cookie..");
     

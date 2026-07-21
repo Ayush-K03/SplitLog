@@ -1,6 +1,7 @@
 // import {backdropStyle,boxStyle} from "../assets/errorBox"
 import {useState,useEffect} from "react"
 import axios from "axios";
+axios.defaults.withCredentials = true;
 import {useNavigate,Link} from "react-router-dom"
 
 export function LoginPage (){
@@ -11,7 +12,7 @@ export function LoginPage (){
 
   async function handleAccountLogin() {
     try{
-      const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/auth/login`,{email,password});
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,{email:email.toLowerCase().trim(),password});
       return navigate("/dashboard",{replace:true})
     }
     catch(err){

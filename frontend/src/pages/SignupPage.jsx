@@ -1,6 +1,7 @@
 
 import {useState} from "react"
 import axios from "axios";
+axios.defaults.withCredentials = true;
 import {useNavigate} from "react-router-dom";
 
 export function SignUpPage (){
@@ -13,7 +14,7 @@ export function SignUpPage (){
 
   async function handleAccountCreation() {
     try{
-      const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/auth/signup`,{email,password,firstName,lastName});
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`,{email:email.toLowerCase().trim(),password,firstName,lastName});
       return navigate("/dashboard", {replace:true});
     }
 
@@ -99,7 +100,7 @@ export function SignUpPage (){
           <div className="text-center mt-2">
             <p className="text-muted">
               Already have an account?{' '}
-              <Link to="/login">Sign In</Link>
+              <a href="/login">Sign In</a>
             </p>
           </div>
         </div>

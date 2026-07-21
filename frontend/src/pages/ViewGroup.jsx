@@ -1,7 +1,9 @@
 import axios from "axios"
+axios.defaults.withCredentials = true;
 import { useParams, useLoaderData, useNavigate } from "react-router-dom"
 import { useState } from 'react'
 import { user } from "../App";
+import { showErrorPage } from "./ErrorPage";
 
 export function ShowGroupDetails(){
     const navigate= useNavigate();
@@ -12,9 +14,12 @@ export function ShowGroupDetails(){
     const [settlements,setSettlements] = useState([]);
     const [userBalance,setUserBalance] = useState(userExpenseInGroup);
 
+    if (groupDetails==null)  return showErrorPage("GROUP_NOT_FOUND")//call the function telling it the type of error page to show 
+
+
     async function getSettlements(){
         try{
-          const res = await axios.get(`${import.meta.env.BACKEND_URL}/api/${groupId}/settlements`)
+          const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`)
           const afterSettlementData= res.data 
           setShowSettlements(true)
           setSettlements(afterSettlementData)
@@ -24,9 +29,9 @@ export function ShowGroupDetails(){
         }
     }
 
-    async function doSettlement(from,to,amount){
+    async function doSettlement(from,to,amount,description){
       try{
-        const res = await axios.post(`${import.meta.env.BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount})
+        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount: Math.round(Number(amount) * 100),description})
         // const newData = await fetchGroupList({ params: { groupId } });
         
         getSettlements()
@@ -45,9 +50,15 @@ export function ShowGroupDetails(){
           <h1 className="page-title">{groupDetails.groupName}</h1>
           <p className="text-muted">Group Details & Expenses</p>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate(`/${groupId}/addExpense`)}>
-          + Add Expense
-        </button>
+        {groupDetails.members.length===1 ? 
+          <button type ="button" disabled className="btn btn-primary" title="Please add more poeple to start splitting">
+            + Add Expense
+          </button> 
+          : 
+          <button className="btn btn-primary" onClick={() => navigate(`/${groupId}/addExpense`)}>
+            + Add Expense
+          </button>
+        }
       </div>
 
       <div className="two-column-layout">
@@ -120,7 +131,7 @@ export function ShowGroupDetails(){
                       </div>
                     </div>
                     <div style={{ fontWeight: 500, color: 'var(--accent-primary)' }}>
-                      ₹{expense.amount}
+                      ₹{(expense.amount/ 100).toFixed(2)}
                     </div>
                   </div>
                 ))}
@@ -142,10 +153,10 @@ export function ShowGroupDetails(){
                       </div>
                     </div>
                     <div style={{ fontWeight: 500, color: 'var(--accent-success)' }}>
-                      ₹{settlement.amount}
+                      ₹{(settlement.amount/ 100).toFixed(2)}
                     </div>
                     <div>
-                      {settlement.from._id===user.userId && <button onClick={()=>doSettlement(settlement.from._id,settlement.to._id,settlement.amount)}>Mark as paid</button>}
+                      {settlement.from._id===user.userId && <button onClick={()=>doSettlement(settlement.from._id,settlement.to._id,settlement.amount,"")}>Mark as paid</button>}
                     </div>
                   </div>
                 ))}
@@ -166,7 +177,7 @@ export function ShowGroupDetails(){
               className={`stat-value ${userBalance >= 0 ? 'positive' : 'negative'}`}
               style={{ fontSize: '36px' }}
             >
-              ₹{Math.abs(userBalance)}
+              ₹{Math.abs((userBalance/ 100).toFixed(2))}
             </div>
           </div>
           <button 

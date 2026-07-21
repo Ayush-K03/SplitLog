@@ -4,10 +4,10 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-        watch: {
-      // This stops Vite from restarting when dotenvx touches the file
-      ignored: ['**/.env', '**/.env.*'] 
-    }
+    //     watch: {
+    //   // This stops Vite from restarting when dotenvx touches the file
+    //   ignored: ['**/.env', '**/.env.*'] 
+    // }
     // proxy: {
     //   // Any request starting with /api will be sent to the backend automatically
     //   // '/api': {

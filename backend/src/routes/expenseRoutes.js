@@ -1,19 +1,32 @@
 import express from 'express';
 import { addExpense,checkIfUserBelongToGroup,showExpenses, showIndiviualBalances, userExpenseAcrossGroups } from '../controllers/expenseController.js';
 import { createSettledRecord ,showPastSettlementByUser,showSettlements} from '../controllers/settlementController.js';
+
+import {groupIdValidity} from "../middleware/groupIdCheck.js";
+
 export const expenseRouter = express.Router();
 
-expenseRouter.route("/:groupId/expenses")
-    .post(checkIfUserBelongToGroup,addExpense)
-    .get(checkIfUserBelongToGroup,showExpenses)
+const subRouter = express.Router({mergeParams : true});
+subRouter.use(groupIdValidity,checkIfUserBelongToGroup);
 
-expenseRouter.route("/:groupId/balances")
-    .get(checkIfUserBelongToGroup,showIndiviualBalances)
-expenseRouter.route("/:groupId/settlements")
-    .get(checkIfUserBelongToGroup,showSettlements)
-    .post(checkIfUserBelongToGroup,createSettledRecord)
+subRouter.route("/expenses")
+    .post(addExpense)
+    .get(showExpenses)
+
+subRouter.route("/balances")
+    .get(showIndiviualBalances)
+subRouter.route("/settlements")
+    .get(showSettlements)
+    .post(createSettledRecord)
+
+
+
 expenseRouter.route("/summary")
     .get(userExpenseAcrossGroups)
 
 expenseRouter.route("/past_settlements")
     .get(showPastSettlementByUser)
+expenseRouter.use("/:groupId",subRouter)
+
+
+
