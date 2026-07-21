@@ -3,17 +3,27 @@ import { Groups } from "../models/Group.js";
 import { Expense } from "../models/Expense.js";
 import { calculateBalances } from "../config/balanceCalc.js";
 import {User} from "../models/User.js"
+import { validationForSettlementCreation } from "../models/Validation.js";
 
 
 export async function createSettledRecord (req,res){
     try{ 
-        await SettlementData.create({
-            groupId:req.body.groupId,
-            from : req.user.userId,
-            to:req.body.to,
-            amount:req.body.amount
-        })
-        res.json({msg:"success"});
+      const validationResult = validationForSettlementCreation.safeParse(req.body);
+      if (validationResult.success === false){
+        console.log("Validation failed for settlement creation");
+        console.log(validationResult.error.format());
+        return res.status(400).send("Invalid Details... Try again"); 
+      } 
+
+      await SettlementData.create({
+        // description : req.body.description,
+          groupId:req.body.groupId,
+          from : req.user.userId,
+          to:req.body.to,
+          amount:req.body.amount
+      })
+
+      res.json({msg:"success"});
     }
     catch(err){
         console.log(err);
@@ -81,7 +91,7 @@ export async function showSettlements(req,res){
 
 export async function showPastSettlementByUser(req,res){
   try{
-    const data = await SettlementData.find({from : req.user.userId})
+    const data = await SettlementData.find({$or: [{from : req.user.userId}, {to:req.user.userId}]}).populate('from to','firstName lastName');
     res.status(200).json(data)
     console.log(here)
     console.log(req.user.userId) 
