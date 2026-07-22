@@ -23,6 +23,7 @@ export function ShowGroupDetails(){
           const afterSettlementData= res.data 
           setShowSettlements(true)
           setSettlements(afterSettlementData)
+          console.log(userBalance)
         }
         catch(err){
           console.log(err)  
@@ -31,7 +32,8 @@ export function ShowGroupDetails(){
 
     async function doSettlement(from,to,amount,description){
       try{
-        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount: Math.round(Number(amount) * 100),description})
+        console.log(amount);
+        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount,description})
         // const newData = await fetchGroupList({ params: { groupId } });
         
         getSettlements()
