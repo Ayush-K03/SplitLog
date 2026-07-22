@@ -6,6 +6,7 @@ const settlementSchema = new mongoose.Schema({
     to : {type:mongoose.Schema.Types.ObjectId, ref:"User"},
     amount : {type : Number, required: true},
     status: {type: String},
+    description : {type: String},
     settledAt : {type : Date, default:Date.now}
 },{timestamps:true})
 

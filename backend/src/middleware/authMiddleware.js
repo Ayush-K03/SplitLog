@@ -11,7 +11,7 @@ export function tokenGeneration (user,res){
     },secretKey,{expiresIn : "7d"});
 
     res.cookie('token',payload,
-        {httpOnly : true , maxAge : 7*24*60*60*1000,secure : false, sameSite : 'lax'}
+        {httpOnly : true , maxAge : 7*24*60*60*1000,secure : false, sameSite : "none"}
     );
     console.log("A token was generated and stored in cookie..");
     

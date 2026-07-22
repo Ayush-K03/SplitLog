@@ -16,18 +16,18 @@ export async function createSettledRecord (req,res){
       } 
 
       await SettlementData.create({
-        // description : req.body.description,
+          // description : req.body.description,
           groupId:req.body.groupId,
           from : req.user.userId,
           to:req.body.to,
           amount:req.body.amount
       })
 
-      res.json({msg:"success"});
+      return res.json({msg:"success"});
     }
     catch(err){
         console.log(err);
-        res.json({msg:"An error occured!"});
+        return res.json({msg:"An error occured!"});
     }
 }
 
@@ -93,7 +93,8 @@ export async function showPastSettlementByUser(req,res){
   try{
     const data = await SettlementData.find({$or: [{from : req.user.userId}, {to:req.user.userId}]}).populate('from to','firstName lastName');
     res.status(200).json(data)
-    console.log(here)
+    console.log("here")
+    console.log(data)
     console.log(req.user.userId) 
   }
   catch(err){

@@ -5,16 +5,14 @@ axios.defaults.withCredentials = true;
 
 export function ShowPastSettlements(){
     const {mySettlements} = useLoaderData();
-    const dataToShow = mySettlements;
     console.log(mySettlements)
     return (
         <>
             <h1>
                 Here are your past transactions : 
             </h1>
-
-            {(dataToShow.length===0) ? "Sorry you have not made any settlements" :
-            dataToShow.map((value)=>
+            {(mySettlements.length===0) ? "Sorry you have not made any settlements" :
+            mySettlements.map((value)=>
             {return(
                 <>
                 <div class="past-payment">

@@ -20,7 +20,7 @@ app.listen(port,() => console.log(`http://localhost:${port}`));
 connectToDatabase();
 
 app.use(cors({
-    origin : "http://localhost:5173",
+    origin : process.env.CORS_ALLOWED_SITE,
     credentials : true,
     // methods : ["GET","POST","PUT","DELETE"],
     // allowedHeaders : ["Content-Type","Authorization"]

@@ -1,245 +1,357 @@
-/* ErrorPage.css */
-.error-container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  position: relative;
+/* =========================
+   GLOBAL RESET
+========================= */
+
+html,
+body,
+#root {
+  margin: 0;
+
+  width: 100%;
+
+  height: 100%;
+
   overflow: hidden;
 }
 
-/* Animated particles background */
-.particles {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+
+/* =========================
+   ERROR PAGE
+========================= */
+
+.error-page {
+  position: fixed;
+
+  inset: 0;
+
+  width: 100vw;
+
+  height: 100vh;
+
+  overflow: hidden;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #ffffff;
+
+  color: #111827;
 }
 
-.particle {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  animation: float-particle var(--duration) infinite;
-  animation-delay: var(--delay);
-  width: var(--size);
-  height: var(--size);
-  left: var(--x);
-  top: var(--y);
-}
 
-@keyframes float-particle {
-  0%, 100% {
-    transform: translateY(0px) scale(1);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translateY(-100px) scale(1.5);
-    opacity: 0.8;
-  }
-}
+/* =========================
+   ERROR CONTENT
+========================= */
 
-/* Error card */
-.error-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 30px;
-  padding: 50px;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  border: 4px solid;
-  position: relative;
-  transform: scale(0.8) rotate(-5deg);
-  opacity: 0;
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.error-card.visible {
-  transform: scale(1) rotate(0deg);
-  opacity: 1;
-}
-
-/* Floating emojis */
-.floating-emoji {
-  position: absolute;
-  font-size: 30px;
-  animation: float-emoji 4s infinite;
-  pointer-events: none;
-}
-
-.floating-emoji:nth-child(1) { top: -20px; left: -20px; }
-.floating-emoji:nth-child(2) { top: -20px; right: -20px; }
-.floating-emoji:nth-child(3) { bottom: -20px; left: 50%; }
-
-@keyframes float-emoji {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(180deg); }
-}
-
-/* Content styles */
 .error-content {
+  position: relative;
+
+  z-index: 2;
+
   text-align: center;
-  position: relative;
-  z-index: 1;
+
+  max-width: 600px;
+
+  padding: 25px 24px 170px;
+
+  animation: contentAppear 0.7s ease-out;
 }
 
-.emoji-container {
-  font-size: 80px;
-  margin-bottom: 20px;
-}
 
-.main-emoji {
-  display: inline-block;
-}
+/* =========================
+   404 NUMBER
+========================= */
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-20px) scale(1.1); }
-}
-
-.error-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 15px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-}
-
-.error-message {
-  font-size: 1.1rem;
-  color: #666;
-  line-height: 1.6;
-  margin-bottom: 25px;
-}
-
-.error-suggestion {
-  background: #f8f9fa;
-  padding: 15px 20px;
-  border-radius: 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 25px;
-  font-size: 0.95rem;
-  color: #555;
-  border-left: 4px solid #667eea;
-}
-
-.error-suggestion p {
-  margin: 0;
-  text-align: left;
-}
-
-/* GIF container */
-.gif-container {
-  margin: 20px 0;
-  position: relative;
-}
-
-.error-gif {
-  max-width: 100%;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-/* Action buttons */
-.action-buttons {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  margin-top: 25px;
-  flex-wrap: wrap;
-}
-
-.btn-primary, .btn-secondary {
-  padding: 12px 30px;
-  border: none;
-  border-radius: 50px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-}
-
-.btn-primary:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-}
-
-.btn-secondary {
-  background: linear-gradient(135deg, #a8a8a8, #7a7a7a);
-}
-
-.btn-secondary:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-}
-
-.btn-primary:active, .btn-secondary:active {
-  transform: scale(0.95);
-}
-
-/* Error code */
 .error-code {
-  margin-top: 25px;
-  padding-top: 20px;
-  border-top: 2px solid #f0f0f0;
-  font-size: 0.85rem;
-  color: #999;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+  font-size: clamp(90px, 15vw, 160px);
+
+  line-height: 0.8;
+
+  font-weight: 900;
+
+  color: #000000;
+
+  user-select: none;
 }
 
-.blink-dot {
-  color: #ff6b6b;
-  animation: blink 1s infinite;
+
+/* =========================
+   ERROR TITLE
+========================= */
+
+.error-content h1 {
+  margin-top: 24px;
+
+  margin-bottom: 12px;
+
+  font-size: clamp(22px, 3.5vw, 34px);
+
+  font-weight: 700;
+
+  color: #111827;
 }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+
+/* =========================
+   ERROR DESCRIPTION
+========================= */
+
+.error-content p {
+  margin: 0 auto;
+
+  max-width: 460px;
+
+  font-size: 15px;
+
+  line-height: 1.6;
+
+  color: #6b7280;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .error-card {
-    padding: 30px 20px;
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.back-button {
+  margin-top: 22px;
+
+  padding: 11px 22px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #111827;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+
+.back-button:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================
+   DETECTIVE TRACK
+========================= */
+
+.detective-track {
+  position: absolute;
+
+  bottom: 0;
+
+  left: 0;
+
+  width: 100%;
+
+  height: 175px;
+
+  overflow: hidden;
+
+  pointer-events: none;
+}
+
+
+/* =========================
+   DETECTIVE WRAPPER
+========================= */
+
+.detective-wrapper {
+  position: absolute;
+
+  bottom: 0;
+
+  left: 0;
+
+  width: 145px;
+
+  transform: translateX(calc(100vw + 200px));
+
+  animation: detectiveWalk 18s linear infinite;
+}
+
+
+/* =========================
+   LOTTIE ANIMATION
+========================= */
+
+.detective-animation {
+  display: block;
+
+  width: 145px;
+
+  height: 145px;
+}
+
+
+/* =========================
+   SEARCHING LABEL
+========================= */
+
+.searching-label {
+  position: absolute;
+
+  top: -2px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  padding: 5px 10px;
+
+  border-radius: 8px;
+
+  background: #f3f4f6;
+
+  color: #6b7280;
+
+  font-size: 11px;
+
+  white-space: nowrap;
+
+  opacity: 0;
+
+  animation: searchingText 18s ease-in-out infinite;
+}
+
+
+/* =========================
+   RIGHT → LEFT MOVEMENT
+========================= */
+
+@keyframes detectiveWalk {
+
+  0% {
+    transform: translateX(calc(100vw + 200px));
   }
-  
-  .error-title {
-    font-size: 1.8rem;
+
+  10% {
+    transform: translateX(80vw);
   }
-  
-  .emoji-container {
-    font-size: 60px;
+
+  25% {
+    transform: translateX(65vw);
   }
-  
-  .action-buttons {
-    flex-direction: column;
-    align-items: center;
+
+  40% {
+    transform: translateX(50vw);
   }
-  
-  .btn-primary, .btn-secondary {
-    width: 100%;
-    justify-content: center;
+
+  55% {
+    transform: translateX(35vw);
   }
+
+  70% {
+    transform: translateX(20vw);
+  }
+
+  85% {
+    transform: translateX(5vw);
+  }
+
+  100% {
+    transform: translateX(-200px);
+  }
+
+}
+
+
+/* =========================
+   SEARCHING TEXT
+========================= */
+
+@keyframes searchingText {
+
+  0%,
+  10% {
+    opacity: 0;
+  }
+
+  20%,
+  70% {
+    opacity: 1;
+  }
+
+  80%,
+  100% {
+    opacity: 0;
+  }
+
+}
+
+
+/* =========================
+   CONTENT APPEARANCE
+========================= */
+
+@keyframes contentAppear {
+
+  from {
+    opacity: 0;
+
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+  .error-content {
+    padding: 20px 20px 160px;
+  }
+
+  .error-code {
+    font-size: 110px;
+  }
+
+  .error-content h1 {
+    font-size: 24px;
+  }
+
+  .error-content p {
+    font-size: 14px;
+  }
+
+  .detective-track {
+    height: 150px;
+  }
+
+  .detective-wrapper {
+    width: 120px;
+  }
+
+  .detective-animation {
+    width: 120px;
+
+    height: 120px;
+  }
+
 }
