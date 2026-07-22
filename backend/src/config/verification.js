@@ -4,7 +4,9 @@ import jwt from 'jsonwebtoken';
 const secretKey= process.env.JWT_SECRET_KEY;
 console.log("Checking JWT Key status:", process.env.JWT_SECRET_KEY ? "Loaded Successfully" : "MISSING ❌");
 export function verifyCheck(req,res,next){
+    console.log("here11")
     if (req.cookies?.token){
+        console.log("here12")
         try{
             const payload = jwt.verify(req.cookies.token,secretKey);
             req.user={...payload};
