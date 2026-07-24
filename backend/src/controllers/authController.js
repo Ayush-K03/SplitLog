@@ -4,7 +4,6 @@ import { tokenGeneration } from "../middleware/authMiddleware.js";
 import { User } from "../models/User.js";
 import { validationForDetailsInLogin, validationForDetailsInSignup } from "../models/Validation.js";
 
-
 export async function createUserInDatabase(req, res) {
   try {
     const validationResult = validationForDetailsInSignup.safeParse(req.body);
@@ -66,5 +65,11 @@ export async function displayHomepage(req, res) {
 }
 
 export async function displayLoginpage(req, res) {
+  console.log("here99")
   res.send("welcome to loginPage");
+}
+
+export async function logoutUser(req,res) {
+  res.clearCookie("token");
+  return res.status(200).json({});
 }

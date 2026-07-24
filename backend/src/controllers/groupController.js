@@ -84,7 +84,7 @@ export async function showMyGroups(req,res){
         const groups= await Groups.find({members: req.user.userId});
         if (!groups){
             console.log("User does not belong to any group !");
-            return res.status(200).json({});
+            return res.status(200).json([]);
         }
         console.log("User specific groups were shown !");
         res.status(200).json(groups.map((value)=>({groupName: value.groupName,gId:value._id,memberCount:value.members.length})));

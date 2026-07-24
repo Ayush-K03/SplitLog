@@ -35,7 +35,7 @@ export function checkforToken(req,res,next){
     }
     else{
         console.log("no token was found !");
-        res.status(307).redirect("/api/auth/login");
+        res.status(200).json([]);
     }
 
 }

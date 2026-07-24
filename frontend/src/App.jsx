@@ -2,24 +2,25 @@ import axios from "axios"
 axios.defaults.withCredentials = true;
 import {useState,useEffect} from "react"
 import {createRoot} from "react-dom/client"
-import { Link,useLoaderData,RouterProvider,createBrowserRouter,Outlet,useNavigate } from 'react-router-dom';
+import { Link,useLoaderData,RouterProvider,createBrowserRouter,Outlet,useNavigate,useNavigation } from 'react-router-dom';
 
 import { LoginPage } from "./pages/LoginPage";
 import {SignUpPage} from "./pages/SignupPage"
 import { CreateDashBoardPage } from "./pages/DashBoard";
-
-import { fetchGroupList } from "./loaders/indiviualGroupLoader";
-import { participantsList } from "./loaders/fetchParticipant"; 
-import { dashBoardLoad } from "./loaders/dashBoardLoader";
-
-
 import { CreateGroupForm } from "./pages/CreateGroups";
 import { ShowGroupDetails } from "./pages/ViewGroup";
 import { JoinGroup } from "./pages/JoinGroup";
 import { AddExepense } from "./pages/AddExpense";
 import { ShowPastSettlements } from "./pages/PastSettlement";
+
+
+import { fetchGroupList } from "./loaders/indiviualGroupLoader";
+import { participantsList } from "./loaders/fetchParticipant"; 
+import { dashBoardLoad } from "./loaders/dashBoardLoader";
 import { getDataForSettlement } from "./loaders/pastSettlementLoader";
 
+
+import {handleLogout} from "./helper_functions/logoutProcess";
 
 const root = createRoot(document.getElementById("root"));
 export let user ={};
@@ -82,7 +83,10 @@ export function App() {
 
 
 function ProtectedRoute(){
+
   const navigate=useNavigate();
+  const navigation=useNavigation();
+
   const [isLoading,setIsLoading] = useState(true);
   const [isAuthenticated,setIsAuthenticated] = useState(false);
 
@@ -98,14 +102,13 @@ function ProtectedRoute(){
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light')
   }
-
-
-
+  
+  
+  
   useEffect(()=>{
     async function checkAuth(){
       try{
         const res= await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify`);
-
         if (res.data.isAuthenticated){
           setIsAuthenticated(true);
           user= res.data.user;
@@ -121,8 +124,12 @@ function ProtectedRoute(){
       }
     }
     checkAuth();
-
+    
   },[]);
+  
+  useEffect(()=>{
+    if (!isAuthenticated  && !isLoading) navigate("/", {replace:true} )
+  },[isAuthenticated,isLoading]);
 
 
   if (isLoading){
@@ -132,6 +139,7 @@ function ProtectedRoute(){
       </div>
     )
   }
+  console.log(isAuthenticated,"-authentication");
 
   console.log(isAuthenticated,"is valid !");
   try {

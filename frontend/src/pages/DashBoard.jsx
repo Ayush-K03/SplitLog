@@ -38,8 +38,10 @@ export function CreateDashBoardPage() {
           <h2 className="card-title">Your Groups</h2>
         </div>
 
-
+        {console.log(groupData)}
+        {console.log(groupData.length)}
         {groupData.length === 0 ? (
+          
           <div className="empty-state">
             <div className="empty-state-icon">👥</div>
             <h3 className="empty-state-title">No groups yet</h3>

@@ -24,7 +24,7 @@ export function verifyCheck(req,res,next){
     }
     else{
         console.log("no token was found !");
-        res.status(400).send({isAuthenticated: false});
+        res.status(401).send({isAuthenticated: false});
     }
 
 }
