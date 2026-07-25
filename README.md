@@ -43,6 +43,7 @@ SplitLog is a full-stack expense-splitting application in the spirit of Splitwis
 
 ## Features
 
+- 💎 **Premium UI/UX** — responsive, custom-built design system with glassmorphism, dynamic avatar stacks, dark/light modes, and micro-animations
 - 🔐 **Secure authentication** — email/password signup and login, passwords hashed with bcrypt, sessions handled via httpOnly JWT cookies
 - 👥 **Groups with invite codes** — create a group and invite others with a short, shareable code
 - 🧾 **Expense tracking** — log an expense and split it across any subset of group members
@@ -50,7 +51,6 @@ SplitLog is a full-stack expense-splitting application in the spirit of Splitwis
 - 🤝 **Debt simplification** — a greedy creditor/debtor matching algorithm reduces a group's debts to the fewest possible transactions
 - ✅ **Settle up** — mark a debt as paid and it's recorded to settlement history
 - 📜 **Settlement history** — a full log of past settlements across all your groups
-- 🌗 **Light/dark theme**
 - 🧭 **Protected, data-loader–driven routing** — pages fetch their data before rendering via React Router loaders
 
 ## Tech Stack
@@ -220,7 +220,7 @@ This produces the minimum number of transactions needed to settle the whole grou
 
 ## Screenshots
 
--->
+*(Add screenshots of your application here, e.g., the dashboard, group details, and expense forms)*
 
 ## Contributing
 
