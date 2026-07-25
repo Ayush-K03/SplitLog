@@ -39,8 +39,14 @@ export function JoinGroup() {
         <div className="form-container">
           <div className="card">
             <div className="text-center mb-3">
-              <h1 style={{ fontSize: '24px', marginBottom: '8px' }}>Join a Group</h1>
-              <p className="text-muted">Enter the invite code to join an existing group</p>
+              <div className="form-page-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                </svg>
+              </div>
+              <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Join a Group</h1>
+              <p className="text-muted" style={{ marginBottom: 0 }}>Enter the invite code to join an existing group</p>
             </div>
 
             <form onSubmit={joinInvitedGroup}>

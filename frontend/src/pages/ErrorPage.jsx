@@ -2,7 +2,7 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import detectiveAnimation from "../assets/detective.json";
 import "./ErrorPage.css";
 
-export function showErrorPage(typeOfError) {
+export function showErrorPage(typeOfError, statusCode = 404) {
   let errorData;
 
   switch (typeOfError?.trim()) {
@@ -22,6 +22,15 @@ export function showErrorPage(typeOfError) {
       };
       break;
 
+    case "SERVER_ERROR":
+      errorData = {
+        title: "Whoops! Server broke a sweat 🔧",
+        message:
+          "Our detective is looking into the server logs to see what tripped us up.",
+      };
+      statusCode = 500;
+      break;
+
     default:
       errorData = {
         title: "Hmm... something went wrong 🤔",
@@ -36,7 +45,7 @@ export function showErrorPage(typeOfError) {
       <div className="error-content">
 
         <div className="error-code">
-          404
+          {statusCode}
         </div>
 
         <h1>

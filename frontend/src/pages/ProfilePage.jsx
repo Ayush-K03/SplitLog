@@ -11,44 +11,87 @@ axios.defaults.withCredentials = true;
 export function GetUserProfile() {
     const navigate = useNavigate();
     const {expenseCount,settlementCount,groupCount,properDate} = useLoaderData();
-    const avatarUrl = getAvatarUrl(user.name); // Call the function to get the avatar URL
+    const avatarUrl = getAvatarUrl(user.name);
 
     return (
         <>
         <div className="page-container">
-            <div className="form-container">
-                <div className="card">
-                    <div className="text-center mb-3">
-                        <h1 style={{ fontSize: '24px', marginBottom: '8px' }}>User Profile</h1>
-                        <p className="text-muted">Your profile information</p>
-
-                        {/* --- AVATAR ELEMENT ADDED HERE --- */}
-                        <div className="avatar-container">
-                            <img 
-                                src={getAvatarUrl(user.name)} 
-                                alt={`${user.name}'s avatar`} 
-                                style={avatarStyles} 
+            <div className="profile-page-wrapper">
+                {/* Profile Hero Card */}
+                <div className="card profile-hero-card">
+                    <div className="profile-avatar-section">
+                        <div className="profile-avatar-ring">
+                            <img
+                                src={getAvatarUrl(user.name)}
+                                alt={`${user.name}'s avatar`}
+                                className="profile-avatar-img"
                             />
                         </div>
 
-                        <pre>Welcome {user.name} #{user.userId.slice(0,5)}</pre>
-                        <p className="text-muted">Name: {user.name}</p>
-                        <p className="text-muted">Email: {user.email}</p>
-                        <p className="text-muted">User ID: {user.userId.slice(0,5)}</p>
-                        <p className="text-muted">Member since: {properDate}</p>
-                        <div className="stats-container">
-                            <p className="text-muted">Total Groups: {groupCount}</p>
-                            <p className="text-muted">Total Expenses: {expenseCount}</p>
-                            <p className="text-muted">Total Settlements: {settlementCount}</p>
+                        //extra
+                        <div className="profile-hero-info">
+                            <h1 className="profile-name">{user.name}</h1>
+                            <p className="profile-email">{user.email}</p>
+                            <div className="profile-badges">
+                                <span className="profile-badge">#{user.userId.slice(0,8)}</span>
+                                <span className="profile-badge">Member since {properDate}</span>
+                            </div>
                         </div>
-                        <button className="btn btn-primary" onClick={() =>{
-                            navigate("/update-password",{replace: true})
-                        }}>Change Password</button>
-                        <button className="btn btn-danger" onClick={async()=>{
+                    </div>
+                </div>
+
+                {/* Stats Row */}
+                //made by ai
+                <div className="profile-stats-grid">
+                    <div className="stat-card">
+                        <div className="stat-card-icon stat-card-icon--primary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.5 2.7-5.8 5.5-5.8s5.5 2.3 5.5 5.8"/><path d="M18 8v5M15.5 10.5h5"/>
+                            </svg>
+                        </div>
+                        <div className="stat-label">Groups</div>
+                        <div className="stat-value">{groupCount}</div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-card-icon stat-card-icon--success">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M7 3v18M17 3v18"/><path d="M3 8h4M17 8h4M3 16h4M17 16h4"/>
+                            </svg>
+                        </div>
+                        <div className="stat-label">Expenses</div>
+                        <div className="stat-value">{expenseCount}</div>
+                    </div>
+                    <div className="stat-card">
+                        <div className="stat-card-icon stat-card-icon--warning">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M4 7h11l-3-3M20 17H9l3 3"/>
+                            </svg>
+                        </div>
+                        <div className="stat-label">Settlements</div>
+                        <div className="stat-value">{settlementCount}</div>
+                    </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="card profile-actions-card">
+                    <h3 className="card-section-title">Account</h3>
+                    <div className="profile-actions">
+                        <button className="btn btn-outline profile-action-btn" onClick={() => navigate("/update-password", {replace: true})}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+                            </svg>
+                            Change Password
+                        </button>
+                        <button className="btn btn-danger profile-action-btn" onClick={async() => {
                             await handleLogout();
-                            navigate("/",{replace: true});
-                            showNotification("success","Logged out successfully");
-                        }}>Logout</button>
+                            navigate("/", {replace: true});
+                            showNotification("success", "Logged out successfully");
+                        }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                            </svg>
+                            Logout
+                        </button>
                     </div>
                 </div>
             </div>

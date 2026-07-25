@@ -45,8 +45,12 @@ export function LoginPage (){
       <div className="form-container">
         <div className="card">
           <div className="text-center mb-3">
-            <h1 style={{ fontSize: '24px', marginBottom: '8px' }}>Sign in to SplitLog</h1>
-            <p className="text-muted">Manage your shared expenses easily</p>
+            <div className="auth-brand">
+              <span className="logo-icon">💰</span>
+              <span className="auth-brand-name">SplitLog</span>
+            </div>
+            <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Welcome back</h1>
+            <p className="text-muted" style={{ marginBottom: 0 }}>Sign in to manage your shared expenses</p>
           </div>
 
 
@@ -94,6 +98,11 @@ export function LoginPage (){
               Don't have an account?{' '}
               <Link to="/signup">Create Account</Link>
             </p>
+          </div>
+          <div className="auth-trust">
+            <span>🔒 Secure &amp; encrypted</span>
+            <span>⚡ Instant balances</span>
+            <span>🤝 Free forever</span>
           </div>
         </div>
       </div>

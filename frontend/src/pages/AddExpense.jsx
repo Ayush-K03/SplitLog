@@ -79,8 +79,13 @@ export function AddExepense(){
         <div className="form-container">
           <div className="card">
             <div className="text-center mb-3">
-              <h1 style={{ fontSize: '24px', marginBottom: '8px' }}>Add New Expense</h1>
-              <p className="text-muted">Record a new expense for the group</p>
+              <div className="form-page-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 3v18M17 3v18"/><path d="M3 8h4M17 8h4M3 16h4M17 16h4"/>
+                </svg>
+              </div>
+              <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Add New Expense</h1>
+              <p className="text-muted" style={{ marginBottom: 0 }}>Record a new expense for the group</p>
             </div>
 
 
@@ -111,33 +116,43 @@ export function AddExepense(){
                   required
                   />
               </div>
-              <div className="category-dropdown">
-                <label htmlFor="category">Category</label>
-                <select
-                  id="category"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="form-select"
-                >
-                  <option value="" disabled selected>Pick a category</option>
+              <div className="form-group">
+                <label className="form-label">Category</label>
+                <div className="category-pills">
                   {categories.map((cat) => (
-                    <option key={cat} value={cat}>
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`category-pill ${category === cat ? 'active' : ''}`}
+                      onClick={() => setCategory(cat)}
+                    >
                       {cat}
-                    </option>
+                    </button>
                   ))}
-                </select>
+                </div>
               </div>
 
-              <div>
-                <label>Split Among :</label>
-                <div className="dropdown-menu">
-                  <button type ="button" onClick={()=>setParticipantListOpen(prev=>!prev)}>Select members V</button>
-                  {participantListOpen && participantsDetails.map( eachUser => {
-                    return(
-                      <div key={eachUser._id}>
-                      <input className="dropdown-items" type="checkbox" value={eachUser.first_name} onChange={(e)=> updateUserList(eachUser._id)} />
-                      <label>{eachUser.firstName}</label>
-                    </div>
+              <div className="form-group">
+                <label className="form-label">Split Among</label>
+                <div className="participant-list">
+                  {participantsDetails.map(eachUser => {
+                    const isSelected = userList.includes(eachUser._id);
+                    return (
+                      <label key={eachUser._id} className={`participant-checkbox ${isSelected ? 'active' : ''}`}>
+                        <input
+                          type="checkbox"
+                          className="hidden-checkbox"
+                          checked={isSelected}
+                          onChange={() => updateUserList(eachUser._id)}
+                        />
+                        <div className="participant-avatar">
+                           {eachUser.firstName ? eachUser.firstName[0].toUpperCase() : '?'}
+                        </div>
+                        <span className="participant-name">{eachUser.firstName}</span>
+                        <div className={`checkbox-indicator ${isSelected ? 'checked' : ''}`}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                      </label>
                     )
                   })}
                 </div>

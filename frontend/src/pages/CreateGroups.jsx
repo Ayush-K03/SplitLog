@@ -39,10 +39,15 @@ export function CreateGroupForm() {
       <div className="form-container">
         <div className="card">
           <div className="text-center mb-3">
-            <h1 style={{ fontSize: "24px", marginBottom: "8px" }}>
+            <div className="form-page-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.5 2.7-5.8 5.5-5.8s5.5 2.3 5.5 5.8"/><path d="M18 8v5M15.5 10.5h5"/>
+              </svg>
+            </div>
+            <h1 style={{ fontSize: "22px", marginBottom: "6px", fontWeight: 700 }}>
               Create New Group
             </h1>
-            <p className="text-muted">Start splitting expenses with friends</p>
+            <p className="text-muted" style={{ marginBottom: 0 }}>Start splitting expenses with your friends</p>
           </div>
 
 

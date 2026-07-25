@@ -64,8 +64,12 @@ export function SignUpPage (){
       <div className="form-container">
         <div className="card">
           <div className="text-center mb-3">
-            <h1 style={{ fontSize: '24px', marginBottom: '8px' }}>Create Account</h1>
-            <p className="text-muted">Join SplitLog to manage expenses</p>
+            <div className="auth-brand">
+              <span className="logo-icon">💰</span>
+              <span className="auth-brand-name">SplitLog</span>
+            </div>
+            <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Create Account</h1>
+            <p className="text-muted" style={{ marginBottom: 0 }}>Join SplitLog to split expenses effortlessly</p>
           </div>
 
 
@@ -137,6 +141,11 @@ export function SignUpPage (){
               Already have an account?{' '}
               <a href="/login">Sign In</a>
             </p>
+          </div>
+          <div className="auth-trust">
+            <span>🔒 Secure &amp; encrypted</span>
+            <span>⚡ Instant balances</span>
+            <span>🤝 Free forever</span>
           </div>
         </div>
       </div>
