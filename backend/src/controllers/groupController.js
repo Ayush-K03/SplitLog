@@ -4,13 +4,13 @@ import { User } from "../models/User.js";
 import crypto from 'crypto'
 
 
-
+//done
 export async function handleGroupCreation(req,res) {
     try{
         console.log(req.body.groupName)
-        if (req.body.groupName.length===0){
+        if (req.body.groupName.length<=3){
             console.log("User gave a invalid username");
-            return res.status(404).send("Enter a valid group name !")
+            return res.status(400).json({msg: "Enter a valid group name !"});
         }
         
         const group = await Groups.create({
@@ -26,61 +26,65 @@ export async function handleGroupCreation(req,res) {
     catch (err){
         console.log("error occured creating group ....");
         console.log(err);
-        res.status(500).send("Error in group creation!")
+        res.status(500).json({msg: "Error in group creation!"});
     }
 }
 
 
 export async function showUserGroup(req,res) {
-    
-    const gId = req.params.groupId;
-    const group = await Groups.findById(gId).populate('createdBy members','firstName');
-    
-    if (group === null){
-        console.log("User tried to access a group that does not exist !");
-        return res.status(200).json(null);
+    try{
+        const gId = req.params.groupId;
+        const group = await Groups.findById(gId).populate('createdBy members','firstName');
+        
+        if (group === null){
+            console.log("User tried to access a group that does not exist !");
+            return res.status(200).json(null);
+        }
+        res.status(200).json(group);
+        console.log("User found their group !");
     }
-    res.status(200).json(group);
-    console.log("User found their group !");
+    catch (err) {
+        console.log("error fetching group");
+        console.log(err);
+        res.status(500).json({msg: "Could not load this group, please try again."});
+    }
 }
 
-
+//done
 export async function joinGroup(req,res){
     try{
         const group = await Groups.findOne({inviteCode : req.params.inviteCode});
         if (!group){
             console.log("No such invite code found");
-            return res.status(404).send("Invalid Invite Code");
+            return res.status(400).json({msg: "Invalid Invite Code"});
         }
         
         if (group.members.includes(req.user.userId)){
             console.log("already a member opened invite link....");
-            return res.status(403).json(group);
+            return res.status(403).json({msg: "You are already a member of this group!"});
         }
         
         const groupOwner = await User.findById(group.createdBy);
         if (!groupOwner){
-            res.status(404).send("This group was deleted or owner left the App !")
+            return res.status(404).json({msg: "This group was deleted or owner left the App !"});
             console.log(groupOwner);
         }
         const ownerName = groupOwner.firstName;
         group.members.push(req.user.userId);
         await group.save();
         console.log("added user successfully!");
-        res.status(200).json(group._id);
-        // .send(`Welcome to the group (${group.groupName})  createdBy : ${ownerName}`);
+        res.status(200).json({groupId: group._id, groupName: group.groupName, ownerName: ownerName});
 
     }
     catch(err){
         console.log("error in joining group");
         console.log(err);
-        res.status(400).send("err...");
+        res.status(500).json({msg: "Error in joining group!"});
     }
 }
 
 export async function showMyGroups(req,res){
     try{
-        console.log("i was called");
         const groups= await Groups.find({members: req.user.userId});
         if (!groups){
             console.log("User does not belong to any group !");
@@ -94,6 +98,6 @@ export async function showMyGroups(req,res){
     catch(err){
         console.log("error occured while show user groups");
         console.log(err);
-        res.status(501).send("An error 4 occured !");
+        res.status(500).send("An error occured while fetching your groups!");
     }
 }

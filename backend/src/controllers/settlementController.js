@@ -34,6 +34,9 @@ export async function createSettledRecord (req,res){
 
 export async function showSettlements(req,res){
   const balanceSheet = await calculateBalances(req.params.groupId,req.user.userId);
+  if (balanceSheet === -1) {
+    return res.status(500).json({msg: "An error occurred while calculating balances"});
+  }
   const creditors={};
   const debtors={};
 

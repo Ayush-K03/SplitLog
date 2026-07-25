@@ -8,5 +8,6 @@ export async function getDataForSettlement() {
     }
     catch(err){
         console.log(err);
+        return { mySettlements: [] }
     }
 }

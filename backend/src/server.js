@@ -11,6 +11,7 @@ import { checkforToken } from "./middleware/authMiddleware.js";
 import { groupRouter } from "./routes/groupRoutes.js";
 import { expenseRouter } from "./routes/expenseRoutes.js";
 import { verifyCheck } from "./config/verification.js";
+import {getAnalysisData} from "./config/analysis.js"
 
 const app=express();
 
@@ -40,6 +41,7 @@ app.use(checkforToken);
 
 app.get("/api/home",displayHomepage);
 app.use("/api/groups",groupRouter);
+app.post("/api/analysis/",(req,res)=>{getAnalysisData(req,res)})
 app.use("/api",expenseRouter);
 
 

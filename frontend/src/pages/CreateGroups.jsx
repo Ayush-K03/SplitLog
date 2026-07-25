@@ -1,22 +1,36 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import {showNotification} from "../helper_functions/toast_helper";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 
 export function CreateGroupForm() {
   const navigate = useNavigate();
   const [groupName, setGroupName] = useState("");
-  const [showError, setShowError] = useState(false);
+  const [formSubmission,setFormSubmission] = useState(false);
+
 
   async function createGroup(e) {
+    setFormSubmission(true)
     e.preventDefault();
+
     try {
+      //validating group name before sending to server
+      if (groupName.trim().length <= 3) {
+        showNotification("error","Group name must be at least 4 characters long");
+        setFormSubmission(false);
+        return;
+      }
+
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/groups/create`, { groupName });
+      showNotification("success","Group created successfully");
       const groupId = res.data._id;
-      return navigate(`/groupDetails/${groupId}`);
-    } catch (err) {
-      setShowError(true);
-      setTimeout(() => setShowError(false), 3000);
+      setTimeout(() => navigate(`/groupDetails/${groupId}`), 1000);
+    } 
+
+    catch (err) {
+      setFormSubmission(false)
+      showNotification("error","Error creating group. Please try again later.");
     }
   }
 
@@ -31,15 +45,11 @@ export function CreateGroupForm() {
             <p className="text-muted">Start splitting expenses with friends</p>
           </div>
 
-          {showError && (
-            <div className="alert alert-error">
-              <span>⚠️</span>
-              Invalid group name. Please try again.
-            </div>
-          )}
+
 
           <form onSubmit={createGroup}>
-            <div className="form-group">
+            {!formSubmission ?(
+              <div className="form-group">
               <label className="form-label">Group Name</label>
               <input
                 type="text"
@@ -48,15 +58,22 @@ export function CreateGroupForm() {
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 required
-              />
-            </div>
+                />
+              </div>
+              ) : (
+                <div className="loading-container">
+                  <div className="loading-spinner"></div>
+                  <pre>  Creating Group..  </pre>
+                </div>
+              )}
 
             <button
               type="submit"
+              disabled ={formSubmission}
               className="btn btn-primary"
               style={{ width: "100%" }}
             >
-              Create Group
+                                {!formSubmission ? "Create Group": "Creating.."}
             </button>
           </form>
         </div>

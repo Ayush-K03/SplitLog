@@ -3,7 +3,7 @@ import { Expense } from "../models/Expense.js";
 import { calculateBalances } from "../config/balanceCalc.js";
 import {User} from "../models/User.js"
 import { validationForExpenseCreation } from "../models/Validation.js";
-
+//middleware to check if user belongs to group or not
 export async function checkIfUserBelongToGroup(req, res, next) {
   const groupExsist = await Groups.findById(req.params.groupId);
   if (!groupExsist) return res.status(200).send("Suchhhhh group does not exsist");
@@ -13,32 +13,33 @@ export async function checkIfUserBelongToGroup(req, res, next) {
   else next();
 }
 
-
+//done
 export async function addExpense(req, res) {
   try {
     const validationResult = validationForExpenseCreation.safeParse(req.body);
     if (validationResult.success === false){
       console.log("Validation failed for expense creation");
       console.log(validationResult.error.format());
-      return res.status(400).send("Invalid Details... Try again"); 
+      return res.status(422).json({msg: "Please enter valid details for expense creation !"}); 
     } 
 
-
+    console.log(req.body.category);
     const expenseEntry = await Expense.create({
       description: req.body.description,
       amount: req.body.amount,
       paidBy: req.user.userId,
       splitAmong: [req.user.userId,...req.body.splitAmong],
       groupId: req.params.groupId,
+      category : req.body.category,
     });
     console.log("User expense was added ! ");
-    return res.status(200).send("expense was added successfully");
+    return res.status(200).json({msg: "expense was added successfully"});
   } 
   
   catch (err) {
     console.log("Failed adding an expense in the db");
     console.log(err);
-    res.status(400).send("Error in adding transaction ! ");
+    res.status(500).json({msg: "Error in adding transaction ! "});
   }
 }
 
@@ -50,7 +51,7 @@ export async function showExpenses(req, res) {
 
   } catch (err) {
     console.log(err);
-    res.status(401).send("Error in showing transaction !");
+    res.status(401).json({msg: "Error in showing transaction !"});
   }
 }
 
@@ -58,7 +59,7 @@ export async function showExpenses(req, res) {
 export async function showIndiviualBalances (req,res){
   const balanceSheet = await calculateBalances(req.params.groupId,req.user.userId);
 
-  if (!balanceSheet) res.send("an error 89 occured");
+  if (balanceSheet===-1) res.status(500).json({msg: "An error occurred while calculating balances"});
   const userExpenseInGroup = balanceSheet[req.user.userId];
   res.json({balanceSheet,userExpenseInGroup});
 }
@@ -77,6 +78,12 @@ export async function userExpenseAcrossGroups(req,res){
     }
     for( const value of groupInfo){
       const balance = await calculateBalances(value._id,req.user.userId);
+
+      if (balance === -1) {
+        console.log(`Skipping group ${value._id} — balance calculation failed`);
+        continue;
+      }
+
       const financialStatus = balance[req.user.userId] ?? 0;
       console.log(financialStatus);
       if ( financialStatus>0) positiveBalance+= financialStatus;

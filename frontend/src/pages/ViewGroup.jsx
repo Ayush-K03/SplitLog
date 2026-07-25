@@ -1,9 +1,10 @@
 import axios from "axios"
-axios.defaults.withCredentials = true;
 import { useParams, useLoaderData, useNavigate } from "react-router-dom"
 import { useState } from 'react'
 import { user } from "../App";
 import { showErrorPage } from "./ErrorPage";
+import { showNotification } from "../helper_functions/toast_helper";
+axios.defaults.withCredentials = true;
 
 export function ShowGroupDetails(){
     const navigate= useNavigate();
@@ -13,39 +14,61 @@ export function ShowGroupDetails(){
     const [showSettlements,setShowSettlements] = useState(false);
     const [settlements,setSettlements] = useState([]);
     const [userBalance,setUserBalance] = useState(userExpenseInGroup);
-
+    const [isFetchingSettlement,setIsFetchingSettlement] = useState(false);
+    const [isProcessingSettlement, setIsProcessingSettlement] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+    const [] = useState(false)
     if (groupDetails==null)  return showErrorPage("GROUP_NOT_FOUND")//call the function telling it the type of error page to show 
 
 
-    async function getSettlements(){
+    async function getSettlements(showToastNotification=true){
+      setIsFetchingSettlement(true);
         try{
           const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`)
           const afterSettlementData= res.data 
-          setShowSettlements(true)
+          
           setSettlements(afterSettlementData)
           console.log(userBalance)
         }
         catch(err){
-          console.log(err)  
+          console.log(err)
+          showNotification("error","Error calculating settlements. Please try again later.");  
+        }
+        finally{
+          setIsFetchingSettlement(false);
+          setShowSettlements(true)
+          if(!showToastNotification) return 
+          showNotification("success","Optimized settlements calculated successfully.");
+          setTimeout(()=>showNotification("success","Please check the settlements section below."), 1000) ;
         }
     }
 
     async function doSettlement(from,to,amount,description){
       try{
+        setIsProcessingSettlement(true);
         console.log(amount);
         const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount,description})
         // const newData = await fetchGroupList({ params: { groupId } });
-        
-        getSettlements()
+        //update settlements by new ones
+        getSettlements(false)
         setUserBalance(userBalance+amount);
-
       }
       catch (err){
         console.log(err)
+        showNotification("error","Error processing settlement. Please try again later.");
+      }
+      finally{
+        showNotification("success","Settlement processed successfully!");
+        setIsProcessingSettlement(false);
       }
     }
 
   return (
+
+
+
+
+
     <div className="page-container">
       <div className="page-header">
         <div>
@@ -73,6 +96,13 @@ export function ShowGroupDetails(){
               <div className="flex-between">
                 <span className="text-muted">Invite Code</span>
                 <span style={{ fontWeight: 500, fontFamily: 'monospace' }}>
+                  <button onClick={() => {
+                    navigator.clipboard.writeText(groupDetails.inviteCode)
+                    setIsCopied(true)
+                    setTimeout(() => setIsCopied(false), 2000)
+                    }}>
+                    {isCopied ? "Copied!" : "Copy Code"}
+                  </button>
                   {groupDetails.inviteCode}
                 </span>
               </div>
@@ -105,6 +135,7 @@ export function ShowGroupDetails(){
               </button>
             </div>
 
+
             {!groupTransactionData || groupTransactionData.length === 0 ? 
             (
               <div className="empty-state">
@@ -131,37 +162,60 @@ export function ShowGroupDetails(){
                         Paid by {expense.paidBy.firstName} • Split among{' '}
                         {expense.splitAmong.map(m => m.firstName).join(", ")}
                       </div>
+                      <div className="list-item-subtitle">
+                        •{expense.category} •{new Date(expense.createdAt).toLocaleDateString()}
+                      </div>
                     </div>
                     <div style={{ fontWeight: 500, color: 'var(--accent-primary)' }}>
                       ₹{(expense.amount/ 100).toFixed(2)}
+                    </div>
+                    <div>
+                      {/* <button onClick={}>Edit</button> */}
+                      {expense.paidBy._id === user.userId && <button >Delete</button>}
                     </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
+          
 
-          {showSettlements && settlements.length > 0 && (
+          {(isFetchingSettlement ||(showSettlements && settlements.length > 0) )&& (
             <div className="card mt-2">
               <div className="card-header">
                 <h2 className="card-title">Settlements</h2>
               </div>
-              <div className="list-container">
-                {settlements.map((settlement, index) => (
-                  <div key={index} className="list-item">
-                    <div className="list-item-content">
-                      <div className="list-item-title">
-                        {settlement.from.firstName} → {settlement.to.firstName}
+              <div className="card-body" style={{ position: 'relative', minHeight: '100px' }}>
+                {isProcessingSettlement && (
+                  <div className ="card-processing-overlay"> </div>
+                )}
+                {isFetchingSettlement ? 
+                (
+                  <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <pre>  </pre>
+                    <p className="text-muted">Calculating group balances...</p>
+                  </div>
+                ):(
+                <div className="list-container">
+                  {settlements.map((settlement, index) => (
+                    <div key={index} className="list-item">
+                      <div className="list-item-content">
+                        <div className="list-item-title">
+                          {settlement.from.firstName} → {settlement.to.firstName}
+                        </div>
+                      </div>
+                      <div style={{ fontWeight: 500, color: 'var(--accent-success)' }}>
+                        ₹{(settlement.amount/ 100).toFixed(2)}
+                      </div>
+                      <div>
+                        {settlement.from._id===user.userId && 
+                        <button disabled={isProcessingSettlement} onClick={()=>doSettlement(settlement.from._id,settlement.to._id,settlement.amount,"")}>Mark as paid</button>}
                       </div>
                     </div>
-                    <div style={{ fontWeight: 500, color: 'var(--accent-success)' }}>
-                      ₹{(settlement.amount/ 100).toFixed(2)}
-                    </div>
-                    <div>
-                      {settlement.from._id===user.userId && <button onClick={()=>doSettlement(settlement.from._id,settlement.to._id,settlement.amount,"")}>Mark as paid</button>}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                )}
               </div>
             </div>
           )}

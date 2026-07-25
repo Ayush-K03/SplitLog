@@ -44,7 +44,7 @@ export async function calculateBalances (groupId,userId){
 
     return balances;
     
-  } catch (error) {
+  } catch (err) {
     console.log(err);
     console.log ("An error showing transactions ....");
     return -1;

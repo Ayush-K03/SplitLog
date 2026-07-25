@@ -1,18 +1,29 @@
 import { useState } from "react"
 import { useNavigate, useParams, useLoaderData } from 'react-router-dom'
 import axios from "axios"
+import {showNotification,resolveLoadingNotification} from "../helper_functions/toast_helper"
 axios.defaults.withCredentials = true;
 
 export function AddExepense(){
     const {groupId} =useParams();
     const [description,setDescription]=useState("");
     const [amount,setAmount]=useState(0);
-    const [showSuccessBox,setShowSuccessBox]= useState(false);
-    const [showError,setShowError]= useState(false);
-    const [participantListOpen,setParticipantListOpen]= useState(false);
     const [userList , setUserList] = useState([]);
+    const [participantListOpen,setParticipantListOpen]= useState(false);
+    const [formSubmission,setFormSubmission] = useState(false);
+    const [category,setCategory] = useState("");
     const navigate=useNavigate();
     const {participantsDetails} = useLoaderData();
+
+    
+    
+    const categories = ["Food", "Travel", "Shopping", "Entertainment", "Education", "Groceries", "Rent and Utilities", "Healthcare", "Subscriptions", "Other"];
+    //function for category selection and change
+    const handleChange = (e) => {
+      const value = e.target.value;
+      setCategory(value);
+      if (onSelect) onSelect(value);
+    };
 
 
     async function updateUserList(userId){
@@ -23,17 +34,41 @@ export function AddExepense(){
     }
 
     async function createExpense(e) {
+      setFormSubmission(true);
       e.preventDefault()
         try{
-          console.log(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/expenses`);
-          const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/expenses`,{description,amount: Math.round(Number(amount) * 100),splitAmong:userList});
-          setShowSuccessBox(true);
-          const timerId = setTimeout(()=>{navigate (`/groupDetails/${groupId}`)},3000);
+          //validating adding an expense 
+          if (description.trim() === "" ){
+            showNotification("error","Description cannot be empty");
+            setFormSubmission(false);
+            return
+          }
+          if (amount <= 0 ){
+            showNotification("error","Amount should be greater than 0");
+            setFormSubmission(false);
+            return
+          }
+          if (userList.length === 0 ) {
+            showNotification("error","Select atleast one participant to split the expense");
+            setFormSubmission(false);
+            return
+          }
+          
+          if (category===""){
+            showNotification("error","Please select a category.");
+            setFormSubmission(false);
+            return;
+          }
+
+          console.log(category);
+          const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/expenses`,{description,amount: Math.round(Number(amount) * 100),splitAmong:userList,category});
+          showNotification("success","Expense added successfully");
+          const timerId = setTimeout(()=>{navigate (`/groupDetails/${groupId}`)},1500);
         }
 
         catch(err){
-          setShowError(true);
-          const timerId = setTimeout(()=>setShowError(false),2500)
+          showNotification("error",err.response?.data?.msg || "Error creating expense. Please try again later.");
+          setFormSubmission(false);
         }
     }
 
@@ -48,21 +83,11 @@ export function AddExepense(){
               <p className="text-muted">Record a new expense for the group</p>
             </div>
 
-            {showError && (
-              <div className="alert alert-error">
-                <span>⚠️</span>
-                Error creating expense. Please try again.
-              </div>
-            )}
-
-            {showSuccessBox && (
-              <div className="alert alert-success">
-                <span>✅</span>
-                Expense creation success. Redirecting you....
-              </div>
-            )}
 
             <form onSubmit={createExpense}>
+              {!formSubmission ? 
+              (
+              <>
               <div className="form-group">
                 <label className="form-label">Description</label>
                 <input
@@ -72,7 +97,7 @@ export function AddExepense(){
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
-                />
+                  />
               </div>
 
               <div className="form-group">
@@ -84,7 +109,23 @@ export function AddExepense(){
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   required
-                />
+                  />
+              </div>
+              <div className="category-dropdown">
+                <label htmlFor="category">Category</label>
+                <select
+                  id="category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="" disabled selected>Pick a category</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div>
@@ -93,7 +134,7 @@ export function AddExepense(){
                   <button type ="button" onClick={()=>setParticipantListOpen(prev=>!prev)}>Select members V</button>
                   {participantListOpen && participantsDetails.map( eachUser => {
                     return(
-                    <div key={eachUser._id}>
+                      <div key={eachUser._id}>
                       <input className="dropdown-items" type="checkbox" value={eachUser.first_name} onChange={(e)=> updateUserList(eachUser._id)} />
                       <label>{eachUser.firstName}</label>
                     </div>
@@ -101,18 +142,23 @@ export function AddExepense(){
                   })}
                 </div>
               </div>
-
+              <button 
+                type="button" 
+                className="btn btn-outline" 
+                style={{ flex: 1 }}
+                onClick={() => navigate(`/groupDetails/${groupId}`)}
+              >
+                Discard Expense
+              </button>
+            </>
+              ) : (
+                <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                </div>
+              )}
               <div className="btn-group">
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
-                  Add Expense
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-outline" 
-                  style={{ flex: 1 }}
-                  onClick={() => navigate(`/groupDetails/${groupId}`)}
-                >
-                  Cancel
+                <button disabled ={formSubmission} type="submit" className="btn btn-primary" style={{ flex: 1 }}>
+                  {!formSubmission ? "Add Expense": "Saving.."}
                 </button>
               </div>
             </form>

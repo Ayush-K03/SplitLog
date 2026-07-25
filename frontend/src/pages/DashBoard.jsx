@@ -1,8 +1,8 @@
 import { useNavigate,useLoaderData } from "react-router-dom"
-
+import { ShowAnalysis } from "./Analysis";
 export function CreateDashBoardPage() {
-  const navigate = useNavigate()
-  const { groupData, positiveBalance, negativeBalance } = useLoaderData()
+  const navigate = useNavigate();
+  const { groupData, positiveBalance, negativeBalance } = useLoaderData();
 
   return (
     <div className="page-container">
@@ -54,8 +54,6 @@ export function CreateDashBoardPage() {
           </div>
         ) : (
           <div className="list-container">
-            {console.log(groupData)}
-            {console.log("Here billu ")}
             {groupData.map((group) => (
               <div key={group.gId} className="list-item">
                 <div className="list-item-content">
@@ -77,6 +75,7 @@ export function CreateDashBoardPage() {
           </div>
         )}
       </div>
+      <ShowAnalysis value={groupData}/>
     </div>
   )
 }

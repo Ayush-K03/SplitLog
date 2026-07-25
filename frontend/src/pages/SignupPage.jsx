@@ -1,26 +1,59 @@
 
 import {useState} from "react"
 import axios from "axios";
-axios.defaults.withCredentials = true;
 import {useNavigate} from "react-router-dom";
+import { showNotification } from "../helper_functions/toast_helper";
+axios.defaults.withCredentials = true;
 
 export function SignUpPage (){
   const [email,setEmail]= useState("")
   const [password,setPassword]= useState("")
   const [firstName,setfirstName]= useState("")
   const [lastName,setlastName]= useState("")
-  const [showError,setShowError]=useState(false);
+
+  const [formSubmission,setFormSubmission] = useState(false);
   const navigate = useNavigate();
 
   async function handleAccountCreation() {
+    setFormSubmission(true);
     try{
+
+
+      //validating email and password before sending to server
+      if (email.trim().length<=0 || !email.includes("@") || !email.includes(".")) {
+        showNotification("error","Please enter a valid email address");
+        setFormSubmission(false);
+        return;
+      }
+      if (password.trim().length < 8) {
+        showNotification("error","Password should at least 8 characters long");
+        setFormSubmission(false);
+        return;
+      }
+
+      if (firstName.trim().length <= 0) {
+        showNotification("error","First name cannot be empty");
+        setFormSubmission(false);
+        return;
+      }
+      if (lastName.trim().length <= 0) {
+        showNotification("error","Last name cannot be empty");
+        setFormSubmission(false);
+        return;
+      }
+
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/signup`,{email:email.toLowerCase().trim(),password,firstName,lastName});
-      return navigate("/dashboard", {replace:true});
+      setTimeout(()=>navigate("/dashboard", {replace:true}),1000)
+      showNotification("success","Account created successfully");
+      return ;
     }
 
     catch(err){
-      setShowError(true);
-       setTimeout(()=>setShowError(false),2500)
+      console.log(err.status)
+      console.log("here")
+      console.log(`${err.response?.data?.msg}` || "An error occurred while creating the account.")
+      setFormSubmission(false);
+      showNotification("error",`${err.response?.data?.msg}` || "An error occurred while creating the account.");
     }
   }
 
@@ -35,25 +68,26 @@ export function SignUpPage (){
             <p className="text-muted">Join SplitLog to manage expenses</p>
           </div>
 
-          {showError && (
-            <div className="alert alert-error">
-              <span>⚠️</span>
-              Invalid entries. Please try again.
-            </div>
-          )}
+
 
           <form onSubmit={(e) => { e.preventDefault(); handleAccountCreation(); }}>
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">First Name</label>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="First name"
-                  value={firstName}
-                  onChange={(e) => setfirstName(e.target.value)}
-                  required
-                />
+            {formSubmission ? (
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+              </div>
+            ) : (
+              <>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">First Name</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setfirstName(e.target.value)}
+                    required
+                    />
               </div>
               <div className="form-group">
                 <label className="form-label">Last Name</label>
@@ -64,7 +98,7 @@ export function SignUpPage (){
                   value={lastName}
                   onChange={(e) => setlastName(e.target.value)}
                   required
-                />
+                  />
               </div>
             </div>
 
@@ -77,7 +111,7 @@ export function SignUpPage (){
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-              />
+                />
             </div>
 
             <div className="form-group">
@@ -89,11 +123,12 @@ export function SignUpPage (){
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-              />
+                />
             </div>
-
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '8px' }}>
-              Create Account
+            </>
+)}
+            <button disabled={formSubmission} type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '8px' }}>
+              {formSubmission ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 

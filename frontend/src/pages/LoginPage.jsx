@@ -1,23 +1,40 @@
 // import {backdropStyle,boxStyle} from "../assets/errorBox"
 import {useState,useEffect} from "react"
 import axios from "axios";
-axios.defaults.withCredentials = true;
 import {useNavigate,Link} from "react-router-dom"
+import {showNotification} from "../helper_functions/toast_helper";
+axios.defaults.withCredentials = true;
 
 export function LoginPage (){
   const [email,setEmail]= useState("")
   const [password,setPassword]= useState("")
-  const [showError,setShowError]= useState(false)
+  const [formSubmission,setFormSubmission] = useState(false);
   const navigate = useNavigate();
 
   async function handleAccountLogin() {
+    setFormSubmission(true);
     try{
+      //validating email and password before sending to server
+      if (email.trim().length<=0 || !email.includes("@") || !email.includes(".")) {
+        showNotification("error","Please enter a valid email address");
+        setFormSubmission(false);
+        return;
+      }
+      if (password.trim().length < 8 ) {
+        showNotification("error","Password should at least 8 characters long");
+        setFormSubmission(false);
+        return;
+      }
+
       const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,{email:email.toLowerCase().trim(),password});
-      return navigate("/dashboard",{replace:true})
+      showNotification("success","Login successful");
+      setTimeout(()=>navigate("/dashboard",{replace:true}),1000)
+      return
     }
     catch(err){
-      setShowError(true);
-      setTimeout(()=>setShowError(false),2500)
+      console.log(err.status)
+      showNotification("error",`${err.response?.data?.msg}` || "An error occurred while logging in.");
+      setFormSubmission(false);
     }
   }
 
@@ -32,42 +49,45 @@ export function LoginPage (){
             <p className="text-muted">Manage your shared expenses easily</p>
           </div>
 
-          {showError && (
-            <div className="alert alert-error">
-              <span>⚠️</span>
-              Invalid credentials. Please try again.
-            </div>
-          )}
 
           <form onSubmit={(e) => { e.preventDefault(); handleAccountLogin(); }}>
             <div className="form-group">
-              <label className="form-label">Email Address</label>
-              <input
-                type="email"
-                className="form-input"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              {formSubmission ? (
+                <div className="loading-container">
+                  <div className="loading-spinner"></div>
+                </div>
+              ) : (
+                <>
+                  <label className="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    className="form-input"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <input
+                    type="password"
+                    className="form-input"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                </>
+              )} 
             </div>
 
-            <div className="form-group">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                className="form-input"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '8px' }}>
-              Sign In
+            <button disabled={formSubmission} type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '8px' }}>
+              {formSubmission ? "Signing in..." : "Sign In"}
             </button>
           </form>
+
 
           <div className="text-center mt-2">
             <p className="text-muted">

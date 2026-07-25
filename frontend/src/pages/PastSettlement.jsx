@@ -9,15 +9,17 @@ export function ShowPastSettlements(){
     return (
         <>
             <h1>
-                Here are your past transactions : 
+                Here are your settlements with other users: 
             </h1>
+            {console.log(mySettlements)}
             {(mySettlements.length===0) ? "Sorry you have not made any settlements" :
             mySettlements.map((value)=>
-            {return(
+            { return(
                 <>
                 <div class="past-payment">
-                    <div>From : {value.from.firstName} </div>
+                    {/* <div>From : {value.from.firstName} </div> */}
                     <div>To : {value.to.firstName} </div>
+                    <div>Settled At : {new Date(value.createdAt).toLocaleString()}</div>
                     <div>Amount : {(value.amount/ 100).toFixed(2)} </div>
                 </div>
                 </>
