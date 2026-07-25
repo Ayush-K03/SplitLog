@@ -1,4 +1,4 @@
-import { useNavigate,useLoaderData } from "react-router-dom"
+import { useNavigate,useLoaderData } from "react-router"
 import { ShowAnalysis } from "./Analysis";
 export function CreateDashBoardPage() {
   const navigate = useNavigate();

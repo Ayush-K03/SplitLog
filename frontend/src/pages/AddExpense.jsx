@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate, useParams, useLoaderData } from 'react-router-dom'
+import { useNavigate, useParams, useLoaderData } from 'react-router'
 import axios from "axios"
 import {showNotification,resolveLoadingNotification} from "../helper_functions/toast_helper"
 axios.defaults.withCredentials = true;

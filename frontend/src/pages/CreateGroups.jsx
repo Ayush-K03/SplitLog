@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {showNotification} from "../helper_functions/toast_helper";
 import axios from "axios";
 axios.defaults.withCredentials = true;

@@ -1,4 +1,4 @@
-import { useNavigation, Form } from 'react-router-dom';
+import { useNavigation, Form } from 'react-router';
 
 export function SmartForm({ children, loadingMessage = "Saving...", ...props }) {
   const navigation = useNavigation();

@@ -1,7 +1,7 @@
 // import {backdropStyle,boxStyle} from "../assets/errorBox"
 import {useState,useEffect} from "react"
 import axios from "axios";
-import {useNavigate,Link} from "react-router-dom"
+import {useNavigate,Link} from "react-router"
 import {showNotification} from "../helper_functions/toast_helper";
 axios.defaults.withCredentials = true;
 

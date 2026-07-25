@@ -1,4 +1,4 @@
-import { useNavigate,useLoaderData } from "react-router-dom"
+import { useNavigate,useLoaderData } from "react-router"
 import {useState,useEffect} from "react"
 import axios from 'axios'
 axios.defaults.withCredentials = true;
