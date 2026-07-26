@@ -1,5 +1,6 @@
 import { useNavigate,useLoaderData } from "react-router"
 import { ShowAnalysis } from "./Analysis";
+import { useState } from "react";
 
 // Deterministic avatar colors — same palette as the hero mockup card
 const AVATAR_COLORS = [
@@ -13,25 +14,45 @@ const AVATAR_COLORS = [
   '#16a34a', // emerald
 ];
 
-function MemberAvatarStack({ count }) {
+// Get initials from a name string (e.g. "John Doe" → "JD", "Alice" → "A")
+function getInitials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+// members: array of member objects with a `firstName` (or similar) field
+// Falls back to count-only mode when no names are available
+function MemberAvatarStack({ count, members }) {
   const shown = Math.min(count, 4);
+  const overflow = count > 4 ? count - 4 : 0;
   return (
     <div className="group-member-avatars">
-      {Array.from({ length: shown }).map((_, i) => (
-        <span
-          key={i}
-          className="group-member-avatar"
-          style={{ '--avatar-color': AVATAR_COLORS[i % AVATAR_COLORS.length], zIndex: shown - i }}
-        />
-      ))}
-      {count > 4 && (
+      {Array.from({ length: shown }).map((_, i) => {
+        const name = members?.[i]?.firstName ?? members?.[i]?.name ?? '';
+        const initials = getInitials(name);
+        return (
+          <span
+            key={i}
+            className="group-member-avatar"
+            style={{ '--avatar-color': AVATAR_COLORS[i % AVATAR_COLORS.length], zIndex: shown - i }}
+            title={name || undefined}
+          >
+            {initials}
+          </span>
+        );
+      })}
+      {overflow > 0 && (
         <span className="group-member-avatar group-member-avatar-overflow">
-          +{count - 4}
+          +{overflow}
         </span>
       )}
     </div>
   );
 }
+
+const GROUPS_PER_PAGE = 8;
 
 export function CreateDashBoardPage() {
   const navigate = useNavigate();
@@ -104,37 +125,83 @@ export function CreateDashBoardPage() {
             </button>
           </div>
         ) : (
-          <div className="list-container">
-            {groupData.map((group) => (
-              <div key={group.gId} className="list-item group-list-item">
-                <div className="group-list-left">
-                  <div className="group-list-icon">
-                    💰
-                  </div>
-                  <div className="list-item-content">
-                    <div className="list-item-title">{group.groupName}</div>
-                    <div className="list-item-subtitle">
-                      {group.memberCount || '0'} member{(group.memberCount || 0) !== 1 ? 's' : ''}
-                    </div>
-                  </div>
-                </div>
-                <div className="group-list-right">
-                  <MemberAvatarStack count={group.memberCount || 0} />
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => navigate(`/groupDetails/${group.gId}`)}
-                  >
-                    View
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+          <PaginatedGroupList
+            groupData={groupData}
+            navigate={navigate}
+          />
         )}
       </div>
       <ShowAnalysis value={groupData}/>
     </div>
   )
+}
+
+function PaginatedGroupList({ groupData, navigate }) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(groupData.length / GROUPS_PER_PAGE);
+  const start = (page - 1) * GROUPS_PER_PAGE;
+  const visibleGroups = groupData.slice(start, start + GROUPS_PER_PAGE);
+
+  return (
+    <>
+      <div className="list-container">
+        {visibleGroups.map((group) => (
+          <div key={group.gId} className="list-item group-list-item">
+            <div className="group-list-left">
+              <div className="group-list-icon">💰</div>
+              <div className="list-item-content">
+                <div className="list-item-title">{group.groupName}</div>
+                <div className="list-item-subtitle">
+                  {group.memberCount || '0'} member{(group.memberCount || 0) !== 1 ? 's' : ''}
+                </div>
+              </div>
+            </div>
+            <div className="group-list-right">
+              <MemberAvatarStack count={group.memberCount || 0} members={group.members} />
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => navigate(`/groupDetails/${group.gId}`)}
+              >
+                View
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="pagination-bar">
+          <button
+            className="pagination-btn"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            aria-label="Previous page"
+          >
+            ‹
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+            <button
+              key={p}
+              className={`pagination-btn${p === page ? ' active' : ''}`}
+              onClick={() => setPage(p)}
+              aria-label={`Page ${p}`}
+              aria-current={p === page ? 'page' : undefined}
+            >
+              {p}
+            </button>
+          ))}
+          <button
+            className="pagination-btn"
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            aria-label="Next page"
+          >
+            ›
+          </button>
+        </div>
+      )}
+    </>
+  );
 }
 
 

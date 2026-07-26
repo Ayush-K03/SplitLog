@@ -190,7 +190,6 @@ function ProtectedRoute(){
       SplitLog
       </Link>
       <nav className="header-nav">
-      <pre>Welcome {user.name} #{user.userId.slice(0,5)}</pre>
       {/* <Link to="/profile" className="header-logo">Profile</Link> */}
       <Link to="/dashboard">Dashboard</Link>
       <Link to="/createGroups">Create Group</Link>

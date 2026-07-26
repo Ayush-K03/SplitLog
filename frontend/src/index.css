@@ -273,9 +273,18 @@ a:hover {
 
 /* ===== App Layout ===== */
 .app-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden; /* header stays sticky; only the outlet scrolls */
+}
+
+/* The Outlet (all dashboard pages) scrolls independently so the header
+   never moves. We target the direct child that is NOT the header. */
+.app-container > *:not(.app-header) {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Standalone auth screens (login / signup) render <div class="form-container">
@@ -284,10 +293,11 @@ a:hover {
    so this selector only ever matches the auth screens — giving them a
    full-bleed, centered, branded canvas without touching any JSX. */
 .app-container:has(> .form-container) {
-  padding: var(--space-xl);
-  position: relative;
+  height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: var(--space-xl);
+  position: relative;
   background:
     radial-gradient(circle at 14% 18%, var(--accent-primary-light) 0%, transparent 42%),
     radial-gradient(circle at 88% 82%, var(--accent-primary-light) 0%, transparent 40%),
@@ -974,9 +984,12 @@ a:hover {
 /* ===== Loading ===== */
 .loading-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  gap: var(--space-sm);
+  min-height: 200px;
+  padding: var(--space-xl);
 }
 
 .loading-spinner {
@@ -1847,4 +1860,169 @@ a:hover {
   opacity: 1;
   transform: scale(1);
 }
+
+
+/* =========================================================
+   Pagination Bar
+   ========================================================= */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border-color-light);
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--bg-tertiary);
+  border-color: var(--text-light);
+  color: var(--text-primary);
+}
+
+.pagination-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   Avatar Initials — make sure text shows inside circles
+   ========================================================= */
+.group-member-avatar {
+  /* override: was empty/self-closing span, now holds text */
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-primary);
+  color: #ffffff;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  user-select: none;
+}
+
+/* =========================================================
+   Expense Delete (Trash) Button
+   ========================================================= */
+.expense-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  opacity: 0.75;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.expense-delete-btn:hover:not(:disabled) {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+/* =========================================================
+   Analysis Section — polished card layout
+   ========================================================= */
+.analysis-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.analysis-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.analysis-controls .form-label {
+  margin-bottom: 0;
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.analysis-control-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.analysis-select {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+  outline: none;
+}
+
+.analysis-select:hover {
+  border-color: var(--text-light);
+}
+
+.analysis-select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: var(--ring-primary);
+}
+
+.analysis-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+@media (max-width: 768px) {
+  .analysis-charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.analysis-chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.analysis-section-title {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 var(--space-lg);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-color-light);
+}
+
 

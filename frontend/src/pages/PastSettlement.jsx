@@ -1,10 +1,17 @@
-import { useNavigate,useLoaderData } from "react-router"
-import {useState,useEffect} from "react"
+import { useLoaderData } from "react-router"
+import { useState } from "react"
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 
+const SETTLEMENTS_PER_PAGE = 10;
+
 export function ShowPastSettlements(){
     const {mySettlements} = useLoaderData();
+    const [page, setPage] = useState(1);
+    const totalPages = Math.ceil(mySettlements.length / SETTLEMENTS_PER_PAGE);
+    const start = (page - 1) * SETTLEMENTS_PER_PAGE;
+    const visible = mySettlements.slice(start, start + SETTLEMENTS_PER_PAGE);
+
     return (
         <div className="page-container">
             <div className="page-header">
@@ -32,7 +39,7 @@ export function ShowPastSettlements(){
             ) : (
                 <div className="card">
                     <div className="list-container">
-                        {mySettlements.map((value, idx) => (
+                        {visible.map((value, idx) => (
                             <div key={idx} className="list-item settlement-history-item">
                                 <div className="settlement-history-icon">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -53,6 +60,38 @@ export function ShowPastSettlements(){
                             </div>
                         ))}
                     </div>
+
+                    {totalPages > 1 && (
+                        <div className="pagination-bar">
+                            <button
+                                className="pagination-btn"
+                                onClick={() => setPage(p => Math.max(1, p - 1))}
+                                disabled={page === 1}
+                                aria-label="Previous page"
+                            >
+                                ‹
+                            </button>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                                <button
+                                    key={p}
+                                    className={`pagination-btn${p === page ? ' active' : ''}`}
+                                    onClick={() => setPage(p)}
+                                    aria-label={`Page ${p}`}
+                                    aria-current={p === page ? 'page' : undefined}
+                                >
+                                    {p}
+                                </button>
+                            ))}
+                            <button
+                                className="pagination-btn"
+                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                                disabled={page === totalPages}
+                                aria-label="Next page"
+                            >
+                                ›
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </div>

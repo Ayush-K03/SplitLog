@@ -6,6 +6,106 @@ import { showErrorPage } from "./ErrorPage";
 import { showNotification } from "../helper_functions/toast_helper";
 axios.defaults.withCredentials = true;
 
+const EXPENSES_PER_PAGE = 8;
+
+// SVG trash icon for the delete button
+function TrashIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <path d="M10 11v6M14 11v6" />
+      <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+    </svg>
+  );
+}
+
+function PaginatedExpenseList({ expenses, currentUserId, onDeleteClick }) {
+  const [page, setPage] = useState(1);
+  const totalPages = Math.ceil(expenses.length / EXPENSES_PER_PAGE);
+  const start = (page - 1) * EXPENSES_PER_PAGE;
+  const visible = expenses.slice(start, start + EXPENSES_PER_PAGE);
+
+  return (
+    <>
+      <div className="list-container">
+        {visible.map((expense, index) => (
+          <div key={start + index} className="list-item expense-list-item">
+            <div className="list-item-content">
+              <div className="list-item-title">{expense.description}</div>
+              <div className="list-item-subtitle">
+                Paid by <strong>{expense.paidBy.firstName}</strong> • Split among{' '}
+                {expense.splitAmong.map(m => m.firstName).join(", ")}
+              </div>
+              <div style={{ marginTop: '4px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                <span className="expense-category-pill">{expense.category}</span>
+                <span className="expense-date-pill">{new Date(expense.createdAt).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</span>
+              </div>
+            </div>
+            <div className="expense-amount-badge">
+              ₹{(expense.amount / 100).toFixed(2)}
+            </div>
+            <div>
+              {expense.paidBy._id === currentUserId && (
+                <button
+                  className="btn btn-danger btn-sm expense-delete-btn"
+                  onClick={() => onDeleteClick && onDeleteClick(expense)}
+                  title="Delete expense"
+                  aria-label={`Delete expense: ${expense.description}`}
+                >
+                  <TrashIcon />
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {totalPages > 1 && (
+        <div className="pagination-bar">
+          <button
+            className="pagination-btn"
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page === 1}
+            aria-label="Previous page"
+          >
+            ‹
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+            <button
+              key={p}
+              className={`pagination-btn${p === page ? ' active' : ''}`}
+              onClick={() => setPage(p)}
+              aria-label={`Page ${p}`}
+              aria-current={p === page ? 'page' : undefined}
+            >
+              {p}
+            </button>
+          ))}
+          <button
+            className="pagination-btn"
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            aria-label="Next page"
+          >
+            ›
+          </button>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function ShowGroupDetails(){
     const navigate= useNavigate();
     const {groupId} = useParams();
@@ -150,29 +250,10 @@ export function ShowGroupDetails(){
               </div>
             ) : 
             (
-              <div className="list-container">
-                {groupTransactionData.map((expense, index) => (
-                  <div key={index} className="list-item expense-list-item">
-                    <div className="list-item-content">
-                      <div className="list-item-title">{expense.description}</div>
-                      <div className="list-item-subtitle">
-                        Paid by <strong>{expense.paidBy.firstName}</strong> • Split among{' '}
-                        {expense.splitAmong.map(m => m.firstName).join(", ")}
-                      </div>
-                      <div style={{ marginTop: '4px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                        <span className="expense-category-pill">{expense.category}</span>
-                        <span className="expense-date-pill">{new Date(expense.createdAt).toLocaleDateString('en-IN', { dateStyle: 'medium' })}</span>
-                      </div>
-                    </div>
-                    <div className="expense-amount-badge">
-                      ₹{(expense.amount/ 100).toFixed(2)}
-                    </div>
-                    <div>
-                      {expense.paidBy._id === user.userId && <button >Delete</button>}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <PaginatedExpenseList
+                expenses={groupTransactionData}
+                currentUserId={user.userId}
+              />
             )}
           </div>
           
@@ -188,7 +269,7 @@ export function ShowGroupDetails(){
                 )}
                 {isFetchingSettlement ? 
                 (
-                  <div className="loading-container">
+                  <div className="loading-container" style={{ minHeight: '120px' }}>
                     <div className="loading-spinner"></div>
                     <pre>  </pre>
                     <p className="text-muted">Calculating group balances...</p>
