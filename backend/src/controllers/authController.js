@@ -117,6 +117,8 @@ export async function updateUserPassword(req,res) {
     if (!oldPasswordValidation) {
       return res.status(401).send({msg: "Current password is incorrect"});
     }
+
+    if (req.body.newPassword.length<8) return res.status(400).json({msg: "New password is too short!"})
     const newPassword = await bcrypt.hash(req.body.newPassword, 11);
     const user = await User.updateOne({ _id: req.user.userId }, 
       { $set: { password: newPassword }}

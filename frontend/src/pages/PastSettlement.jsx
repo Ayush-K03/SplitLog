@@ -1,6 +1,7 @@
 import { useLoaderData } from "react-router"
 import { useState } from "react"
 import axios from 'axios'
+import { user } from "../App.jsx";
 axios.defaults.withCredentials = true;
 
 const SETTLEMENTS_PER_PAGE = 10;
@@ -39,26 +40,33 @@ export function ShowPastSettlements(){
             ) : (
                 <div className="card">
                     <div className="list-container">
-                        {visible.map((value, idx) => (
-                            <div key={idx} className="list-item settlement-history-item">
-                                <div className="settlement-history-icon">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M4 7h11l-3-3M20 17H9l3 3"/>
-                                    </svg>
-                                </div>
-                                <div className="list-item-content">
-                                    <div className="list-item-title">
-                                        Paid to {value.to?.firstName || "Unknown User"}
+                        {visible.map((value, idx) => {
+                            const isPayer = value.from?._id === user.userId;
+                            const displayName = isPayer ? value.to?.firstName : value.from?.firstName;
+                            const actionText = isPayer ? "Paid to" : "Received from";
+                            const amountColor = isPayer ? "var(--accent-danger)" : "var(--accent-success)";
+                            
+                            return (
+                                <div key={idx} className="list-item settlement-history-item">
+                                    <div className="settlement-history-icon">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M4 7h11l-3-3M20 17H9l3 3"/>
+                                        </svg>
                                     </div>
-                                    <div className="list-item-subtitle">
-                                        {new Date(value.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                                    <div className="list-item-content">
+                                        <div className="list-item-title">
+                                            {actionText} {displayName || "Unknown User"}
+                                        </div>
+                                        <div className="list-item-subtitle">
+                                            {new Date(value.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}
+                                        </div>
+                                    </div>
+                                    <div className="settlement-history-amount" style={{ color: amountColor }}>
+                                        ₹{(value.amount / 100).toFixed(2)}
                                     </div>
                                 </div>
-                                <div className="settlement-history-amount">
-                                    ₹{(value.amount / 100).toFixed(2)}
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {totalPages > 1 && (
