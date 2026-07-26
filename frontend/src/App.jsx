@@ -50,7 +50,6 @@ const myMainRouter = createBrowserRouter([
   {
     path: "/",
     element: <ShowHomePage />,
-    loader: redirectIfLoggedIn,
     errorElement: <GlobalErrorBoundary />
   },
   {

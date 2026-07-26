@@ -62,7 +62,7 @@ export function GetUserProfile() {
                     <div className="stat-card">
                         <div className="stat-card-icon stat-card-icon--warning">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M4 7h11l-3-3M20 17H9l3 3"/>
+                                <path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>
                             </svg>
                         </div>
                         <div className="stat-label">Settlements</div>

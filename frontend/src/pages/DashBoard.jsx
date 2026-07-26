@@ -78,7 +78,7 @@ export function CreateDashBoardPage() {
         <div className="stat-card">
           <div className="stat-card-icon stat-card-icon--success">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              <path d="M6 3h12"/><path d="M6 8h12"/><path d="M6 13h8.5l-6 9"/><path d="M11 3c4 0 6 3 6 5s-2 5-6 5"/>
             </svg>
           </div>
           <div className="stat-label">You are owed</div>
@@ -87,7 +87,7 @@ export function CreateDashBoardPage() {
         <div className="stat-card">
           <div className="stat-card-icon stat-card-icon--danger">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              <path d="M6 3h12"/><path d="M6 8h12"/><path d="M6 13h8.5l-6 9"/><path d="M11 3c4 0 6 3 6 5s-2 5-6 5"/>
             </svg>
           </div>
           <div className="stat-label">You owe</div>

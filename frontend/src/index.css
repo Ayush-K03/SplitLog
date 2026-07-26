@@ -278,15 +278,14 @@ a:hover {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Every direct child of app-container that is NOT the header
    (i.e. the <Outlet /> wrapper) fills remaining space and scrolls. */
 .app-container > .app-header ~ * {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
 }
 
 /* Standalone auth screens (login / signup) render <div class="form-container">
@@ -529,7 +528,7 @@ a:hover {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   padding: var(--space-lg);
-  text-align: center;
+  text-align: left;
   box-shadow: var(--shadow-sm);
   transition: box-shadow var(--transition-base), transform var(--transition-base);
 }
