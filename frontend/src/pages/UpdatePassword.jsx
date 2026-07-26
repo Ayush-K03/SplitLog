@@ -33,11 +33,13 @@ export function UpdatePassword() {
                 // alert("Error: " + (err.response?.data?.msg || "Session expired"));
                 showNotification("error",(err.response?.data?.msg || "Session expired"))
             }
-            console.error("Error during password update:", err);
-            showNotification("error",(err.response?.data?.msg || "A network or server error occurred"))
-            // setErrorMessage("Error: " + (err.response?.data?.msg || "A network or server error occurred"));
-            setUpdatingPassword(false);
-            return 
+            else {
+                console.error("Error during password update:", err);
+                showNotification("error",(err.response?.data?.msg || "A network or server error occurred"))
+                // setErrorMessage("Error: " + (err.response?.data?.msg || "A network or server error occurred"));
+                setUpdatingPassword(false);
+                return
+            }
         }
     }
 
