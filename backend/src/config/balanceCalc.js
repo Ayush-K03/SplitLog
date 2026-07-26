@@ -8,7 +8,8 @@ export async function calculateBalances (groupId,userId){
     balances[userId]=0;
     
     //find current group expenses
-    const expenses= await Expense.find({groupId: groupId});
+    const query = {groupId: groupId, isDeleted:false};
+    const expenses= await Expense.find(query);
     if (expenses.length===0) return(balances);
     
     const group= await Groups.findById(groupId);

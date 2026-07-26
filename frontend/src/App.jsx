@@ -191,7 +191,7 @@ function ProtectedRoute(){
       <div className="header-content">
       <Link to="/dashboard" className="header-logo">
       
-      <span className="logo-icon">💰</span>
+      <span className="logo-icon"><img src="/favicon.jpg" alt="SplitLog" /></span>
       SplitLog
       </Link>
       <nav className="header-nav">

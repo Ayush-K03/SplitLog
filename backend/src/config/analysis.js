@@ -21,15 +21,18 @@ export async function getAnalysisData (req,res){
 
         const commonStage = { $match: matchQuery };
 
-        const [spendData,trendData,categoryData] = 
+        const [ totalExpenseResult,expenseCountResult,spendData,trendData,categoryData] = 
         await Promise.all(
             [
+                Expense.aggregate([commonStage,  {$group: {_id: null,totalExpense: { $sum: "$amount" }}}]),
+                Expense.aggregate([commonStage,  {$count: "totalExpenses" }]),
                 Expense.aggregate([commonStage, {$group: {_id: "$paidBy",totalSpend: {$sum: "$amount"}}},{$lookup: {from: "users", localField: "_id", foreignField: "_id", as: "user"}},{$unwind: "$user"}, {$project: {_id: 0, user: {$concat: ["$user.firstName", " ", "$user.lastName"]}, totalSpend: 1}}, {$sort: {totalSpend: -1}}]) ,
                 Expense.aggregate([commonStage, {$group: {_id: {$dateToString: {format: "%Y-%m-%d",date: "$createdAt"}},totalExpense: {$sum: "$amount"}}}, {$project: {_id: 0,date: "$_id",totalExpense: 1}}, {$sort: {date: 1}}]) ,
                 Expense.aggregate([ commonStage,{$group : {_id: "$category" , totalSum :{$sum : "$amount"}}}, {$project:{_id:0,category:"$_id",totalExpense:"$totalSum"}}])
             ]);
-        console.log("i am here boys !")
-        return res.status(200).json({spendData,trendData,categoryData})
+        // console.log("i am here boys !")
+        console.log(totalExpenseResult,expenseCountResult)
+        return res.status(200).json({totalExpenseResult,expenseCountResult,spendData,trendData,categoryData})
     }
     catch (err){
         return res.status(400).json({msg: "An error ocuured while trying to fetch chart please try agin later..."})

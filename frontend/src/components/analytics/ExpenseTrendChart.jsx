@@ -26,7 +26,7 @@ export function ExpenseTrendChart({ data }) {
                     <Tooltip />
                     <Line
                         type="monotone"
-                        dataKey="totalExpense"
+                        dataKey="totalExpense" name="Expense"
                         stroke="#8884d8"
                         dot={false}
                     />

@@ -45,7 +45,8 @@ export async function addExpense(req, res) {
 
 export async function showExpenses(req, res) {
   try {
-    const expenses = await Expense.find({ groupId: req.params.groupId }).populate('paidBy splitAmong' , 'firstName');
+    const query ={isDeleted:false,groupId: req.params.groupId };
+    const expenses = await Expense.find(query).populate('paidBy splitAmong' , 'firstName');
     if (expenses.length === 0) return res.status(200).json([]);
     res.status(200).json(expenses);
 
@@ -94,4 +95,22 @@ export async function userExpenseAcrossGroups(req,res){
     console.log(positiveBalance);
     console.log(negativeBalance);
 
+}
+
+
+
+export async function deleteExpense(req,res){
+  try{
+    const query = {paidBy : req.user.userId , _id : req.body.expenseId,isDeleted:false}
+    const expenseFound= await Expense.findOneAndUpdate(query,{isDeleted:true});
+    if (!expenseFound) return res.status(404).json({msg: "Sorry you are not the owner of this expense or No such expense exsist"});
+
+    // const 
+    console.log("deleted");
+    return res.status(200).json({msg : "Expense was successfully deleted!"});
+  }
+  catch(err){
+    console.log("Expense deletion failed!")
+    res.status(500).json({msg : "Expense deletion failed! Server error"})
+  }
 }
