@@ -7,6 +7,7 @@ export function tokenGeneration (user,res){
     const payload = jwt.sign({
         userId : user._id,
         name:user.firstName,
+        lastName:user.lastName,
         email:user.email
     },secretKey,{expiresIn : "7d"});
     console.log(user);

@@ -11,8 +11,8 @@ axios.defaults.withCredentials = true;
 export function GetUserProfile() {
     const navigate = useNavigate();
     const {expenseCount,settlementCount,groupCount,properDate} = useLoaderData();
-    const avatarUrl = getAvatarUrl(user.firstName || user.name);
-
+    const avatarUrl = getAvatarUrl( user.name,user.lastName);
+    console.log(user);
     return (
         <>
         <div className="page-container">
@@ -22,14 +22,14 @@ export function GetUserProfile() {
                     <div className="profile-avatar-section">
                         <div className="profile-avatar-ring">
                             <img
-                                src={getAvatarUrl(user.firstName || user.name)}
-                                alt={`${user.firstName || user.name}'s avatar`}
+                                src={getAvatarUrl(user.name,user.lastName)}
+                                alt={`${user.name}'s avatar`}
                                 className="profile-avatar-img"
                             />
                         </div>
-
                         <div className="profile-hero-info">
-                            <h1 className="profile-name">{user.firstName || user.name}</h1>
+                            {console.log(user)}
+                            <h1 className="profile-name">{`${user.name} ${user.lastName || " "} `.trim()}</h1>
                             <p className="profile-email">{user.email}</p>
                             <div className="profile-badges">
                                 <span className="profile-badge">#{user.userId.slice(0,8)}</span>

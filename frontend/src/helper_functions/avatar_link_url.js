@@ -46,8 +46,11 @@ export const avatarLabelStyles = {
  * Generates a dynamic placeholder avatar URL safely using any provided name string
  * @param {string} name - Name of the hostel roommate
  */
-export const getAvatarUrl = (name) => {
+export const getAvatarUrl = (name="User",lastName=" ") => {
+  console.log(name+lastName)
   // If name isn't loaded yet, fall back safely to a default generic text label
-  const displayName = name || "User";
+  const displayName = (name[0]+" "+lastName[0]).trim();
+  console.log(displayName)
+
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D6EFD&color=fff&rounded=true&size=150`;
 };

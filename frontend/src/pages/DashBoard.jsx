@@ -14,32 +14,27 @@ const AVATAR_COLORS = [
   '#16a34a', // emerald
 ];
 
-// Get initials from a name string (e.g. "John Doe" → "JD", "Alice" → "A")
-function getInitials(name) {
-  if (!name) return '?';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0][0].toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
 
-// members: array of member objects with a `firstName` (or similar) field
 // Falls back to count-only mode when no names are available
-function MemberAvatarStack({ count, members }) {
+function MemberAvatarStack({ count, members=[] }) {
   const shown = Math.min(count, 4);
   const overflow = count > 4 ? count - 4 : 0;
+  console.log(members)
   return (
     <div className="group-member-avatars">
       {Array.from({ length: shown }).map((_, i) => {
-        const name = members?.[i]?.firstName ?? members?.[i]?.name ?? '';
-        const initials = getInitials(name);
+        const currentMember = members[i];
+        const name = currentMember.firstName[0] + " " + currentMember.lastName[0];
+        const hoverName = currentMember.firstName + " " + currentMember.lastName;
+        {console.log(name)}
         return (
           <span
             key={i}
             className="group-member-avatar"
             style={{ '--avatar-color': AVATAR_COLORS[i % AVATAR_COLORS.length], zIndex: shown - i }}
-            title={name || undefined}
+            title={hoverName}
           >
-            {initials}
+            {name}
           </span>
         );
       })}
@@ -157,7 +152,8 @@ function PaginatedGroupList({ groupData, navigate }) {
               </div>
             </div>
             <div className="group-list-right">
-              <MemberAvatarStack count={group.memberCount || 0} members={group.members} />
+              {console.log(group)}
+              <MemberAvatarStack count={group.memberCount || 0} members={group.memberDetails} />
               <button
                 className="btn btn-outline btn-sm"
                 onClick={() => navigate(`/groupDetails/${group.gId}`)}

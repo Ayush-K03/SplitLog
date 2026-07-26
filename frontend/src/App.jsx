@@ -202,7 +202,7 @@ function ProtectedRoute(){
       <Link to="/pastSettlement">Past Settlements</Link>
       <Link to="/profile" className="header-logo header-profile-link">
         <img
-          src={getAvatarUrl(user.firstName || user.name)}
+          src={getAvatarUrl(user.name,user.lastName)}
           style={avatarStylesMini}
           alt="User Profile"
         />

@@ -84,13 +84,14 @@ export async function joinGroup(req,res){
 
 export async function showMyGroups(req,res){
     try{
-        const groups= await Groups.find({members: req.user.userId});
+        const groups= await Groups.find({members: req.user.userId}).populate({path: 'members',select: 'firstName lastName'});
         if (!groups){
             console.log("User does not belong to any group !");
             return res.status(200).json([]);
         }
-        console.log("User specific groups were shown !");
-        res.status(200).json(groups.map((value)=>({groupName: value.groupName,gId:value._id,memberCount:value.members.length})));
+        // console.log("User specific groups were shown !");
+        // console.log(groups.map((value)=>({groupName: value.groupName,gId:value._id,memberCount:value.members.length,memberDetails : value.members})))
+        res.status(200).json(groups.map((value)=>({groupName: value.groupName,gId:value._id,memberCount:value.members.length,memberDetails : value.members})));
 
     }
 
