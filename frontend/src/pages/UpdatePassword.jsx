@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-
+import {showNotification} from "../helper_functions/toast_helper"
 export function UpdatePassword() {
     const navigate = useNavigate();
     const [oldPassword, setOldPassword] = useState("");
@@ -30,10 +30,12 @@ export function UpdatePassword() {
         catch (err){
             if (err.status === 401) {
                 console.error("Unauthorized: ", err.response?.data?.msg || "Unknown error");
-                alert("Error: " + (err.response?.data?.msg || "Session expired"));
+                // alert("Error: " + (err.response?.data?.msg || "Session expired"));
+                showNotification("error",(err.response?.data?.msg || "Session expired"))
             }
             console.error("Error during password update:", err);
-            setErrorMessage("Error: " + (err.response?.data?.msg || "A network or server error occurred"));
+            showNotification("error",(err.response?.data?.msg || "A network or server error occurred"))
+            // setErrorMessage("Error: " + (err.response?.data?.msg || "A network or server error occurred"));
             setUpdatingPassword(false);
             return 
         }
