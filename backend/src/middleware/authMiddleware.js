@@ -12,7 +12,7 @@ export function tokenGeneration (user,res){
     },secretKey,{expiresIn : "7d"});
     console.log(user);
     res.cookie('token',payload,
-        {httpOnly : true , maxAge : 7*24*60*60*1000,secure : true, sameSite : "lax"}
+        {httpOnly : true , maxAge : 7*24*60*60*1000,secure : true, sameSite : "none"}
     );
     console.log("A token was generated and stored in cookie..");
     
@@ -28,7 +28,7 @@ export function checkforToken(req,res,next){
         }
 
         catch(err){
-            res.clearCookie('token');
+            res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
             console.log("token extraction failed from cookies ! ")
             console.log("token was removed ! ")
             return res.status(401).json({ msg: "Invalid or expired session, please log in again." });

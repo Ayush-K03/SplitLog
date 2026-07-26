@@ -14,7 +14,7 @@ export function verifyCheck(req,res,next){
 
         catch(err){
             console.log(err);
-            res.clearCookie('token');
+            res.clearCookie('token', { httpOnly: true, secure: true, sameSite: 'none' });
             console.log("token extraction failed from cookies ! ")
             console.log("token was removed ! ")
             res.status(401).send({isAuthenticated: false});
