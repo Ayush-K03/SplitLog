@@ -153,7 +153,7 @@ export function ShowHomePage() {
       <header className="landing-nav">
         <div className="landing-nav-inner">
           <Link to="/" className="header-logo">
-            <span className="logo-icon"><img src="/favicon.jpg" alt="SplitLog" /></span>
+            <span className="logo-icon"><img src="/favicon.png" alt="SplitLog" /></span>
             SplitLog
           </Link>
 
@@ -410,7 +410,7 @@ export function ShowHomePage() {
       <footer className="landing-footer">
         <div className="landing-footer-inner">
           <Link to="/" className="header-logo">
-            <span className="logo-icon"><img src="/favicon.jpg" alt="SplitLog" /></span>
+            <span className="logo-icon"><img src="/favicon.png" alt="SplitLog" /></span>
             SplitLog
           </Link>
           <div className="landing-footer-links">

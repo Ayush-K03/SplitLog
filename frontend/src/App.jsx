@@ -20,6 +20,7 @@ import { fetchGroupList } from "./loaders/indiviualGroupLoader";
 import { participantsList } from "./loaders/fetchParticipant"; 
 import { dashBoardLoad } from "./loaders/dashBoardLoader";
 import { getDataForSettlement } from "./loaders/pastSettlementLoader";
+import { redirectIfLoggedIn } from "./loaders/authLoader";
 
 
 import {handleLogout} from "./helper_functions/logoutProcess";
@@ -49,16 +50,19 @@ const myMainRouter = createBrowserRouter([
   {
     path: "/",
     element: <ShowHomePage />,
+    loader: redirectIfLoggedIn,
     errorElement: <GlobalErrorBoundary />
   },
   {
     path: "/login",
     element: <LoginPage />,
+    loader: redirectIfLoggedIn,
     errorElement: <GlobalErrorBoundary />
   },
   {
     path: "/signup",
     element: <SignUpPage />,
+    loader: redirectIfLoggedIn,
     errorElement: <GlobalErrorBoundary />
   },
   {
@@ -95,12 +99,6 @@ const myMainRouter = createBrowserRouter([
       },
       {
         path: "/:groupId/addExpense",
-        element: <AddExepense />,
-        loader: participantsList,
-        errorElement: <GlobalErrorBoundary />
-      },
-      {
-        path: "/:groupId/expense_list",
         element: <AddExepense />,
         loader: participantsList,
         errorElement: <GlobalErrorBoundary />

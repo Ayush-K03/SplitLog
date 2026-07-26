@@ -44,36 +44,48 @@ export function UpdatePassword() {
             <div className="page-container">
                 <div className="form-container">
                     <div className="card">
-                        <h2>Update Password</h2>
+                        <div className="text-center mb-3">
+                            <div className="form-page-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+                            <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Update Password</h1>
+                            <p className="text-muted" style={{ marginBottom: 0 }}>Enter your current and new password</p>
+                        </div>
                         <form onSubmit={handleSubmit}>
                             <div className="form-group">
-                                <label htmlFor="oldPassword">Current Password</label>
+                                <label className="form-label" htmlFor="oldPassword">Current Password</label>
                                 <input
                                     type="password"
                                     id="oldPassword"
                                     value={oldPassword}
                                     onChange={(e) => setOldPassword(e.target.value)}
-                                    className="form-control"
+                                    className="form-input"
+                                    required
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="newPassword">New Password</label>
+                                <label className="form-label" htmlFor="newPassword">New Password</label>
                                 <input
                                     type="password"
                                     id="newPassword"
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="form-control"
+                                    className="form-input"
+                                    required
                                 />
                             </div>
                             <div className="form-group">
-                                <label htmlFor="confirmPassword">Confirm New Password</label>
+                                <label className="form-label" htmlFor="confirmPassword">Confirm New Password</label>
                                 <input
                                     type="password"
                                     id="confirmPassword"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="form-control"
+                                    className="form-input"
+                                    required
                                 />
                             </div>
                             {errorMessage && (
@@ -81,8 +93,15 @@ export function UpdatePassword() {
                                     {errorMessage}
                                 </div>
                             )}
-                            <button type="submit" className="btn btn-primary">
-                                Update Password
+                            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={updatingPassword}>
+                                {updatingPassword ? (
+                                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', alignItems: 'center' }}>
+                                        <div className="mini-spinner"></div>
+                                        Updating...
+                                    </div>
+                                ) : (
+                                    'Update Password'
+                                )}
                             </button>
                         </form>
                     </div>

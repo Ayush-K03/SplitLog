@@ -17,6 +17,7 @@ export function JoinGroup() {
         try {
 
             if (inviteCode.length<4) {
+              isSubmitting(false)
               return showNotification("error","Invite code must be at least 4 characters long");
             }
             const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/groups/join/${inviteCode}`);

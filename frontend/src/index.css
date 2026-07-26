@@ -2061,7 +2061,7 @@ a:hover {
   top: var(--space-md);
   right: var(--space-lg);
   font-size: 28px;
-  opacity: 0.18;
+  opacity: 1;
   pointer-events: none;
   user-select: none;
 }

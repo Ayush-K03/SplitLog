@@ -84,7 +84,7 @@ export function TopSpendersChart({ data }) {
                         formatter={(value) => [`₹${(value / 100).toFixed(2)}`, 'Total Spend']}
                         cursor={{ fill: isDark ? 'rgba(131,133,245,0.08)' : 'rgba(79,70,229,0.06)' }}
                     />
-                    <Bar dataKey="totalSpend" name="Total Spend" radius={[0, 6, 6, 0]}>
+                    <Bar dataKey="totalSpend" name="Total Spend" radius={[0, 6, 6, 0]} barSize={24}>
                         {data.map((_, index) => (
                             <Cell key={index} fill={BAR_COLORS[index % BAR_COLORS.length]} />
                         ))}

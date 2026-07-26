@@ -60,7 +60,7 @@ export async function showExpenses(req, res) {
 export async function showIndiviualBalances (req,res){
   const balanceSheet = await calculateBalances(req.params.groupId,req.user.userId);
 
-  if (balanceSheet===-1) res.status(500).json({msg: "An error occurred while calculating balances"});
+  if (balanceSheet===-1) return res.status(500).json({msg: "An error occurred while calculating balances"});
   const userExpenseInGroup = balanceSheet[req.user.userId];
   res.json({balanceSheet,userExpenseInGroup});
 }

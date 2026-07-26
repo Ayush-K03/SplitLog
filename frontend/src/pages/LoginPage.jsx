@@ -12,12 +12,7 @@ export function LoginPage (){
   const navigate = useNavigate();
 
 
-  // Redirection if already logged in
-  useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify`)
-      .then(res => { if (res.data.isAuthenticated) navigate("/dashboard", { replace: true }); })
-      .catch(() => {});
-  }, []);
+
 
   async function handleAccountLogin() {
     setFormSubmission(true);
