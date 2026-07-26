@@ -5,7 +5,7 @@ const settlementSchema = new mongoose.Schema({
     from : {type:mongoose.Schema.Types.ObjectId, ref:"User"},
     to : {type:mongoose.Schema.Types.ObjectId, ref:"User"},
     amount : {type : Number, required: true},
-    status: {type: String},
+    status: {type: String,enum: ["pending", "approved", "rejected"], default: "pending"},
     description : {type: String},
     settledAt : {type : Date, default:Date.now}
 },{timestamps:true})

@@ -1,6 +1,6 @@
 import express from 'express';
 import { deleteExpense, addExpense,checkIfUserBelongToGroup,showExpenses, showIndiviualBalances, userExpenseAcrossGroups } from '../controllers/expenseController.js';
-import { createSettledRecord ,showPastSettlementByUser,showSettlements} from '../controllers/settlementController.js';
+import { getPendingSettlementList,approveSettlement,createSettledRecord ,showPastSettlementByUser,showSettlements} from '../controllers/settlementController.js';
 
 import {groupIdValidity} from "../middleware/groupIdCheck.js";
 
@@ -28,6 +28,10 @@ expenseRouter.route("/past_settlements")
     .get(showPastSettlementByUser)
 expenseRouter.route("/deleteExpense")
     .put(deleteExpense)
+expenseRouter.route("/:settlementId/approve")
+    .patch(approveSettlement)
+expenseRouter.route("/showPendingList")
+    .post(getPendingSettlementList)
 expenseRouter.use("/:groupId",subRouter)
 
 

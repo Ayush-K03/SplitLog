@@ -15,8 +15,18 @@ export async function createSettledRecord (req,res){
         return res.status(400).send("Invalid Details... Try again"); 
       } 
 
+      const existingPending = await SettlementData.findOne({
+          from: req.user.userId,
+          to: req.body.to,
+          groupId: req.body.groupId,
+          status: "pending"
+      });
+      if (existingPending) {
+          return res.status(409).json({msg: "A pending settlement request already exists for this user"});
+      }
+
+
       await SettlementData.create({
-          // description : req.body.description,
           groupId:req.body.groupId,
           from : req.user.userId,
           to:req.body.to,
@@ -103,5 +113,46 @@ export async function showPastSettlementByUser(req,res){
   catch(err){
     res.json({msg: "Sorry an error occured !"})
     console.log(err)
+  }
+}
+
+
+export async function approveSettlement(req,res){
+    try{
+        const settlement = await SettlementData.findById(req.params.settlementId);
+        if (!settlement){
+            return res.status(404).json({msg: "Settlement not found"});
+        }
+
+        //2 backend check that user whom approval belong to 
+        // and if status is no more pending
+        if (settlement.to.toString() !== req.user.userId){
+            return res.status(403).json({msg: "Only the receiver can approve this settlement"});
+        }
+        if (settlement.status !== "pending"){
+            return res.status(400).json({msg: `Settlement is already ${settlement.status}`});
+        }
+        
+        settlement.status = "approved";
+        await settlement.save();
+        return res.status(200).json({msg: "Settlement approved successfully!"});
+    }
+    catch(err){
+        console.log(err);
+        return res.status(500).json({msg: "Error in approving settlement"});
+    }
+}
+
+
+
+export async function getPendingSettlementList(req,res){
+  try{
+    const query ={to: req.user.userId,status:"pending"};
+    const pendingList = await SettlementData.find(query);
+    console.log(pendingList)
+    res.status(200).json(pendingList)
+  }
+  catch(err){
+    res.status(500).json({msg:"An error occured while fetching approval list form server!"})
   }
 }

@@ -35,7 +35,7 @@ export async function calculateBalances (groupId,userId){
     // return (balances);
 
     //mapping fresh balance after settlements 
-    const settlementUpdates= await SettlementData.find({groupId:groupId});
+    const settlementUpdates= await SettlementData.find({groupId:groupId,status:"approved"});
     if (settlementUpdates.length===0) return balances;
 
     settlementUpdates.forEach((eachSettlement)=>{

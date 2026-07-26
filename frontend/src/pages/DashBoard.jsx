@@ -1,6 +1,7 @@
 import { useNavigate,useLoaderData } from "react-router"
 import { ShowAnalysis } from "./Analysis";
 import { useState } from "react";
+import { SettlePendingRequest } from "./PendingSettlements";
 
 // Deterministic avatar colors — same palette as the hero mockup card
 const AVATAR_COLORS = [
@@ -127,6 +128,7 @@ export function CreateDashBoardPage() {
           />
         )}
       </div>
+      <SettlePendingRequest/>
       <ShowAnalysis value={groupData}/>
     </div>
   )
