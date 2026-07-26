@@ -118,13 +118,13 @@ export function ShowGroupDetails(){
     const {groupId} = useParams();
     const {groupDetails,groupTransactionData,userExpenseInGroup} = useLoaderData();
 
+    const [expenses, setExpenses] = useState(groupTransactionData || []);
     const [showSettlements,setShowSettlements] = useState(false);
     const [settlements,setSettlements] = useState([]);
     const [userBalance,setUserBalance] = useState(userExpenseInGroup);
     const [isFetchingSettlement,setIsFetchingSettlement] = useState(false);
     const [isProcessingSettlement, setIsProcessingSettlement] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
-    const [] = useState(false)
     if (groupDetails==null)  return <ErrorPage typeOfError="GROUP_NOT_FOUND" />//call the function telling it the type of error page to show 
 
     async function getSettlements(showToastNotification=true){
