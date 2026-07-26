@@ -35,7 +35,7 @@ export function checkforToken(req,res,next){
     }
     else{
         console.log("no token was found !");
-        res.status(200).json([]);
+        return res.status(401).json({ msg: "Unauthorized! Please log in." });
     }
 
 }

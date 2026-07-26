@@ -11,7 +11,7 @@ axios.defaults.withCredentials = true;
 export function GetUserProfile() {
     const navigate = useNavigate();
     const {expenseCount,settlementCount,groupCount,properDate} = useLoaderData();
-    const avatarUrl = getAvatarUrl(user.name);
+    const avatarUrl = getAvatarUrl(user.firstName || user.name);
 
     return (
         <>
@@ -22,15 +22,14 @@ export function GetUserProfile() {
                     <div className="profile-avatar-section">
                         <div className="profile-avatar-ring">
                             <img
-                                src={getAvatarUrl(user.name)}
-                                alt={`${user.name}'s avatar`}
+                                src={getAvatarUrl(user.firstName || user.name)}
+                                alt={`${user.firstName || user.name}'s avatar`}
                                 className="profile-avatar-img"
                             />
                         </div>
 
-                        //extra
                         <div className="profile-hero-info">
-                            <h1 className="profile-name">{user.name}</h1>
+                            <h1 className="profile-name">{user.firstName || user.name}</h1>
                             <p className="profile-email">{user.email}</p>
                             <div className="profile-badges">
                                 <span className="profile-badge">#{user.userId.slice(0,8)}</span>
@@ -41,7 +40,6 @@ export function GetUserProfile() {
                 </div>
 
                 {/* Stats Row */}
-                //made by ai
                 <div className="profile-stats-grid">
                     <div className="stat-card">
                         <div className="stat-card-icon stat-card-icon--primary">

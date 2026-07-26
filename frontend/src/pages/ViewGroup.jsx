@@ -2,7 +2,7 @@ import axios from "axios"
 import { useParams, useLoaderData, useNavigate } from "react-router"
 import { useState } from 'react'
 import { user } from "../App";
-import { showErrorPage } from "./ErrorPage";
+import { ErrorPage } from "./ErrorPage";
 import { showNotification } from "../helper_functions/toast_helper";
 axios.defaults.withCredentials = true;
 
@@ -118,8 +118,7 @@ export function ShowGroupDetails(){
     const [isProcessingSettlement, setIsProcessingSettlement] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const [] = useState(false)
-    if (groupDetails==null)  return showErrorPage("GROUP_NOT_FOUND")//call the function telling it the type of error page to show 
-
+    if (groupDetails==null)  return <ErrorPage typeOfError="GROUP_NOT_FOUND" />//call the function telling it the type of error page to show 
 
     async function getSettlements(showToastNotification=true){
       setIsFetchingSettlement(true);

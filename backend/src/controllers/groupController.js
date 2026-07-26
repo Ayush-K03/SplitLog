@@ -67,7 +67,6 @@ export async function joinGroup(req,res){
         const groupOwner = await User.findById(group.createdBy);
         if (!groupOwner){
             return res.status(404).json({msg: "This group was deleted or owner left the App !"});
-            console.log(groupOwner);
         }
         const ownerName = groupOwner.firstName;
         group.members.push(req.user.userId);

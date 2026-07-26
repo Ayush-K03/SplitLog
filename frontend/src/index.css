@@ -19,10 +19,11 @@
   padding: 0;
 }
 
-html,
-body,
+/* Only #root needs to fill height for the authenticated app shell.
+   html and body must NOT have height:100% or the landing page
+   (which renders directly into #root without app-container) won't scroll. */
 #root {
-  height: 100%;
+  min-height: 100vh;
 }
 
 img,
@@ -272,16 +273,17 @@ a:hover {
 }
 
 /* ===== App Layout ===== */
+/* Authenticated pages use a fixed shell: sticky header + scrolling content area. */
 .app-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* header stays sticky; only the outlet scrolls */
+  overflow: hidden;
 }
 
-/* The Outlet (all dashboard pages) scrolls independently so the header
-   never moves. We target the direct child that is NOT the header. */
-.app-container > *:not(.app-header) {
+/* Every direct child of app-container that is NOT the header
+   (i.e. the <Outlet /> wrapper) fills remaining space and scrolls. */
+.app-container > .app-header ~ * {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;

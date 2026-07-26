@@ -6,7 +6,7 @@ import { validationForExpenseCreation } from "../models/Validation.js";
 //middleware to check if user belongs to group or not
 export async function checkIfUserBelongToGroup(req, res, next) {
   const groupExsist = await Groups.findById(req.params.groupId);
-  if (!groupExsist) return res.status(200).send("Suchhhhh group does not exsist");
+  if (!groupExsist) return res.status(404).json({msg: "Group not found"});
   const userInGroup = groupExsist.members.includes(req.user.userId);
   if (!userInGroup)
     return res.status(403).send("You do not belong to this group");

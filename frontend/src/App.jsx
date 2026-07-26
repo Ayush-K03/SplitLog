@@ -14,6 +14,7 @@ import { JoinGroup } from "./pages/JoinGroup";
 import { AddExepense } from "./pages/AddExpense";
 import { ShowPastSettlements } from "./pages/PastSettlement";
 import { ShowHomePage } from "./pages/HomePage";
+import { ErrorPage } from "./pages/ErrorPage";
 
 import { fetchGroupList } from "./loaders/indiviualGroupLoader";
 import { participantsList } from "./loaders/fetchParticipant"; 
@@ -92,6 +93,10 @@ const myMainRouter = createBrowserRouter([
         element: <UpdatePassword />
       }
     ]
+  },
+  {
+    path: "*",
+    element: <ErrorPage />
   }
 ])
 
@@ -195,14 +200,12 @@ function ProtectedRoute(){
       <Link to="/createGroups">Create Group</Link>
       <Link to="/joinGroup">Join Group</Link>
       <Link to="/pastSettlement">Past Settlements</Link>
-      <Link to="/profile" className="header-logo"> 
-        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <img 
-            src={getAvatarUrl(user.name)} 
-            style={avatarStylesMini} 
-            alt="User Profile Menu" 
-          />
-        </div>
+      <Link to="/profile" className="header-logo header-profile-link">
+        <img
+          src={getAvatarUrl(user.firstName || user.name)}
+          style={avatarStylesMini}
+          alt="User Profile"
+        />
       </Link>
       <button 
       onClick={toggleTheme}

@@ -2,7 +2,7 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import detectiveAnimation from "../assets/detective.json";
 import "./ErrorPage.css";
 
-export function showErrorPage(typeOfError, statusCode = 404) {
+export function ErrorPage({ typeOfError, statusCode = 404 }) {
   let errorData;
 
   switch (typeOfError?.trim()) {
