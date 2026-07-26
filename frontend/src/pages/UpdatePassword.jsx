@@ -32,6 +32,7 @@ export function UpdatePassword() {
                 console.error("Unauthorized: ", err.response?.data?.msg || "Unknown error");
                 // alert("Error: " + (err.response?.data?.msg || "Session expired"));
                 showNotification("error",(err.response?.data?.msg || "Session expired"))
+                setUpdatingPassword(false);
             }
             else {
                 console.error("Error during password update:", err);
