@@ -24,9 +24,10 @@ function MemberAvatarStack({ count, members=[] }) {
     <div className="group-member-avatars">
       {Array.from({ length: shown }).map((_, i) => {
         const currentMember = members[i];
-        const name = currentMember.firstName[0] + " " + currentMember.lastName[0];
-        const hoverName = currentMember.firstName + " " + currentMember.lastName;
-        {console.log(name)}
+        const first = currentMember?.firstName?.[0] || "?";
+        const last = currentMember?.lastName?.[0] || "?";
+        const name = `${first} ${last}`;
+        const hoverName = `${currentMember?.firstName || ""} ${currentMember?.lastName || ""}`.trim();
         return (
           <span
             key={i}

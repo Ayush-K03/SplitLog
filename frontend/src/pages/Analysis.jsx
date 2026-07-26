@@ -3,6 +3,7 @@ import {ExpenseTrendChart} from "../components/analytics/ExpenseTrendChart";
 import {PieExpenseChart} from "../components/analytics/PieExpenseChart";
 import {TopSpendersChart} from "../components/analytics/TopSpendersChart";
 import {showNotification} from "../helper_functions/toast_helper"
+import { ShowCards } from "../components/analytics/StatCards";
 import axios from "axios"
 axios.defaults.withCredentials = true;
 
@@ -15,6 +16,8 @@ export function ShowAnalysis ({value : groupData}){
     const [categoryData,setCategoryData] = useState([]);
     const [spendData,setSpendData] = useState([]);
     const [trendData,setTrendData] = useState([]);
+    const [totalExpenseResult,setTotalExpenseResult]= useState(0);
+    const [expenseCountResult,setExpenseCountResult]= useState(0);
 
     async function updateCharts(startDate,endDate,groupId){
         try{
@@ -23,6 +26,8 @@ export function ShowAnalysis ({value : groupData}){
             setCategoryData(res.data.categoryData||[]);
             setSpendData(res.data.spendData||[]);
             setTrendData(res.data.trendData||[]);
+            setTotalExpenseResult(res.data.totalExpenseResult?.[0]?.totalExpense || 0)
+            setExpenseCountResult(res.data.expenseCountResult?.[0]?.totalExpenses || 0)
         }
         catch(err){
             console.log(err.response?.data.msg);
@@ -56,7 +61,7 @@ export function ShowAnalysis ({value : groupData}){
     return (
     <div className="analysis-section">
         <h2 className="analysis-section-title">Expense Analytics</h2>
-
+        
         {/* Controls row */}
         <div className="card" style={{ padding: 'var(--space-md) var(--space-lg)' }}>
             <div className="analysis-controls">
@@ -105,17 +110,23 @@ export function ShowAnalysis ({value : groupData}){
             </div>
         </div>
         ) : (
-            <div className="analysis-charts-grid">
-                <div className="analysis-chart-card">
-                    <ExpenseTrendChart data={trendData}/>
+            <>
+                <div>
+                    <ShowCards value={totalExpenseResult} count={expenseCountResult} />
                 </div>
-                <div className="analysis-chart-card">
-                    <PieExpenseChart data={categoryData}/>
+
+                <div className="analysis-charts-grid">
+                    <div className="analysis-chart-card">
+                        <ExpenseTrendChart data={trendData}/>
+                    </div>
+                    <div className="analysis-chart-card">
+                        <PieExpenseChart data={categoryData}/>
+                    </div>
+                    <div className="analysis-chart-card" style={{ gridColumn: '1 / -1' }}>
+                        <TopSpendersChart data={spendData}/>
+                    </div>
                 </div>
-                <div className="analysis-chart-card" style={{ gridColumn: '1 / -1' }}>
-                    <TopSpendersChart data={spendData}/>
-                </div>
-            </div>
+            </>
         )
         }
     </div>

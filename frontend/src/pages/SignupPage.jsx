@@ -65,7 +65,7 @@ export function SignUpPage (){
         <div className="card">
           <div className="text-center mb-3">
             <div className="auth-brand">
-              <span className="logo-icon">💰</span>
+              <span className="logo-icon"><img src="/favicon.jpg" alt="SplitLog" /></span>
               <span className="auth-brand-name">SplitLog</span>
             </div>
             <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Create Account</h1>

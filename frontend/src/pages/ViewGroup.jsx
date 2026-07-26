@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useParams, useLoaderData, useNavigate } from "react-router"
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { user } from "../App";
 import { ErrorPage } from "./ErrorPage";
 import { showNotification } from "../helper_functions/toast_helper";
@@ -32,7 +32,14 @@ function TrashIcon() {
 
 function PaginatedExpenseList({ expenses, currentUserId, onDeleteClick }) {
   const [page, setPage] = useState(1);
-  const totalPages = Math.ceil(expenses.length / EXPENSES_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(expenses.length / EXPENSES_PER_PAGE));
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
   const start = (page - 1) * EXPENSES_PER_PAGE;
   const visible = expenses.slice(start, start + EXPENSES_PER_PAGE);
 
@@ -40,7 +47,7 @@ function PaginatedExpenseList({ expenses, currentUserId, onDeleteClick }) {
     <>
       <div className="list-container">
         {visible.map((expense, index) => (
-          <div key={start + index} className="list-item expense-list-item">
+          <div key={expense._id} className="list-item expense-list-item">
             <div className="list-item-content">
               <div className="list-item-title">{expense.description}</div>
               <div className="list-item-subtitle">
