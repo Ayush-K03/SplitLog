@@ -8,7 +8,7 @@ export const validationForDetailsInSignup = z.object({
 });
 export const validationForDetailsInLogin = z.object({
     email:z.string().email(),
-    // password:z.string().min(8,"Password should be atleast 8 characters").max(60,"Password is too long...")
+    password:z.string().min(8,"Password should be atleast 8 characters").max(60,"Password is too long...")
 });
 
 export const expenseCategories = z.enum(["Food", "Travel", "Shopping", "Entertainment", "Education", "Groceries", "Rent and Utilities", "Healthcare", "Subscriptions", "Other"]);

@@ -28,7 +28,16 @@ export function ErrorPage({ typeOfError, statusCode = 404 }) {
         message:
           "Our detective is looking into the server logs to see what tripped us up.",
       };
-      statusCode = 500;
+      statusCode = statusCode === 404 ? 500 : statusCode;
+      break;
+
+    case "NOT_FOUND":
+      errorData = {
+        title: "This page doesn't exist! 🗺️",
+        message:
+          "You've wandered off the map. Our detective can't find what you're looking for.",
+      };
+      statusCode = 404;
       break;
 
     default:

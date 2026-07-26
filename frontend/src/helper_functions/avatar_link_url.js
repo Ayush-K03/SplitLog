@@ -49,7 +49,9 @@ export const avatarLabelStyles = {
 export const getAvatarUrl = (name="User",lastName=" ") => {
   console.log(name+lastName)
   // If name isn't loaded yet, fall back safely to a default generic text label
-  const displayName = (name[0]+" "+lastName[0]).trim();
+  const first = name?.[0] || "?";
+  const last = lastName?.[0] || "";
+  const displayName = (first + " " + last).trim();
   console.log(displayName)
 
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0D6EFD&color=fff&rounded=true&size=150`;

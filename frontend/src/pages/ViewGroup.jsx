@@ -125,6 +125,8 @@ export function ShowGroupDetails(){
     const [isFetchingSettlement,setIsFetchingSettlement] = useState(false);
     const [isProcessingSettlement, setIsProcessingSettlement] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
+    // Tracks settlements the user has already clicked "Mark paid" on this session
+    const [pendingSettlements, setPendingSettlements] = useState(new Set());
     if (groupDetails==null)  return <ErrorPage typeOfError="GROUP_NOT_FOUND" />//call the function telling it the type of error page to show 
 
     async function getSettlements(showToastNotification=true){
@@ -134,7 +136,14 @@ export function ShowGroupDetails(){
           const afterSettlementData= res.data 
           
           setSettlements(afterSettlementData)
-          console.log(userBalance)
+          setShowSettlements(true)
+          
+          if (showToastNotification) {
+            showNotification("success", "Optimized settlements calculated successfully.");
+            setTimeout(() => {
+              showNotification("success", "Please check the settlements section below.");
+            }, 1000);
+          }
         }
         catch(err){
           console.log(err)
@@ -142,30 +151,37 @@ export function ShowGroupDetails(){
         }
         finally{
           setIsFetchingSettlement(false);
-          setShowSettlements(true)
-          if(!showToastNotification) return 
-          showNotification("success","Optimized settlements calculated successfully.");
-          setTimeout(()=>showNotification("success","Please check the settlements section below."), 1000) ;
         }
     }
 
-    async function doSettlement(from,to,amount,description){
+    async function doSettlement(from,to,amount,description,settlementKey){
       try{
         setIsProcessingSettlement(true);
-        console.log(amount);
-        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount,description})
-        // const newData = await fetchGroupList({ params: { groupId } });
-        //update settlements by new ones
+        const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/${groupId}/settlements`,{groupId,from,to,amount})
+        // Mark this specific settlement as pending so button turns disabled
+        setPendingSettlements(prev => new Set([...prev, settlementKey]));
         getSettlements(false)
-        setUserBalance(userBalance+amount);
+        showNotification("success","Settlement request sent! Awaiting approval from the receiver.");
       }
       catch (err){
         console.log(err)
         showNotification("error","Error processing settlement. Please try again later.");
       }
       finally{
-        showNotification("success","Settlement processed successfully!");
         setIsProcessingSettlement(false);
+      }
+    }
+
+    async function handleExpenseDeletion (expenseId){
+      try{
+        const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/deleteExpense`,{expenseId})
+        showNotification("success",response.data.msg);
+        setExpenses(prevExpenses => prevExpenses.filter(item => item._id !== expenseId));
+         if (showSettlements) getSettlements(false);
+      }
+      catch(err){
+        console.log("Error in deleting expense");
+        showNotification("error",err.response.data.msg);
       }
     }
 
@@ -239,7 +255,7 @@ export function ShowGroupDetails(){
             </div>
 
 
-            {!groupTransactionData || groupTransactionData.length === 0 ? 
+            { expenses.length === 0 ? 
             (
               <div className="empty-state">
                 <div className="empty-state-icon">💳</div>
@@ -257,8 +273,9 @@ export function ShowGroupDetails(){
             ) : 
             (
               <PaginatedExpenseList
-                expenses={groupTransactionData}
+                expenses={expenses}
                 currentUserId={user.userId}
+                onDeleteClick={(expense)=>{handleExpenseDeletion(expense._id)}}
               />
             )}
           </div>
@@ -299,8 +316,19 @@ export function ShowGroupDetails(){
                         ₹{(settlement.amount/ 100).toFixed(2)}
                       </div>
                       <div>
-                        {settlement.from._id===user.userId && 
-                        <button className="btn btn-success btn-sm" disabled={isProcessingSettlement} onClick={()=>doSettlement(settlement.from._id,settlement.to._id,settlement.amount,"")}>Mark paid</button>}
+                        {settlement.from._id===user.userId && (() => {
+                          const key = `${settlement.from._id}-${settlement.to._id}-${settlement.amount}`;
+                          const isPending = pendingSettlements.has(key);
+                          return (
+                            <button
+                              className={`btn btn-sm ${isPending ? 'btn-outline settlement-pending-btn' : 'btn-success'}`}
+                              disabled={isProcessingSettlement || isPending}
+                              onClick={() => doSettlement(settlement.from._id, settlement.to._id, settlement.amount, "", key)}
+                            >
+                              {isPending ? '⏳ Pending…' : 'Mark paid'}
+                            </button>
+                          );
+                        })()}
                       </div>
                     </div>
                   ))}

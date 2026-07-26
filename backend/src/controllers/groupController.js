@@ -2,14 +2,16 @@ import mongoose from 'mongoose';
 import { Groups } from "../models/Group.js";
 import { User } from "../models/User.js";
 import crypto from 'crypto'
+import { validationForGroupCreation } from "../models/Validation.js";
 
 
 //done
 export async function handleGroupCreation(req,res) {
     try{
         console.log(req.body.groupName)
-        if (req.body.groupName.length<=3){
-            console.log("User gave a invalid username");
+        const validationResult = validationForGroupCreation.safeParse(req.body);
+        if (validationResult.success === false){
+            console.log("User gave a invalid groupName");
             return res.status(400).json({msg: "Enter a valid group name !"});
         }
         
@@ -39,6 +41,11 @@ export async function showUserGroup(req,res) {
         if (group === null){
             console.log("User tried to access a group that does not exist !");
             return res.status(200).json(null);
+        }
+
+        const isMember = group.members.some(m => m._id.toString() === req.user.userId);
+        if (!isMember) {
+            return res.status(403).json({msg: "You are not a member of this group!"});
         }
         res.status(200).json(group);
         console.log("User found their group !");

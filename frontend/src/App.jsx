@@ -1,7 +1,7 @@
 import axios from "axios"
 import {useState,useEffect} from "react"
 import {createRoot} from "react-dom/client"
-import { Link,useLoaderData,RouterProvider,createBrowserRouter,Outlet,useNavigate,useNavigation } from 'react-router';
+import { Link,useLoaderData,RouterProvider,createBrowserRouter,Outlet,useNavigate,useNavigation,useRouteError } from 'react-router';
 import { ToastContainer } from 'react-toastify';
 
 
@@ -35,68 +35,93 @@ axios.defaults.withCredentials = true;
 const root = createRoot(document.getElementById("root"));
 export let user ={};
 
+// Global error boundary element for router-level errors (loader throws, etc.)
+function GlobalErrorBoundary() {
+  const error = useRouteError();
+  const statusCode = error?.status || error?.statusCode || 500;
+  if (statusCode === 404) {
+    return <ErrorPage typeOfError="NOT_FOUND" statusCode={404} />;
+  }
+  return <ErrorPage typeOfError="SERVER_ERROR" statusCode={statusCode} />;
+}
+
 const myMainRouter = createBrowserRouter([
   {
     path: "/",
-    element: <ShowHomePage />
+    element: <ShowHomePage />,
+    errorElement: <GlobalErrorBoundary />
   },
   {
     path: "/login",
-    element: <LoginPage />
+    element: <LoginPage />,
+    errorElement: <GlobalErrorBoundary />
   },
   {
     path: "/signup",
-    element: <SignUpPage />
+    element: <SignUpPage />,
+    errorElement: <GlobalErrorBoundary />
   },
   {
     element: <ProtectedRoute />,
+    errorElement: <GlobalErrorBoundary />,
     children: [
       {
         path: "/dashboard",
         element: <CreateDashBoardPage />,
-        loader: dashBoardLoad
+        loader: dashBoardLoad,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path: "/createGroups",
-        element: <CreateGroupForm />
+        element: <CreateGroupForm />,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path: "/joinGroup",
-        element: <JoinGroup />
+        element: <JoinGroup />,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path : "/pastSettlement",
         element : <ShowPastSettlements/>,
-        loader : getDataForSettlement
+        loader : getDataForSettlement,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path: "/groupDetails/:groupId",
         element: <ShowGroupDetails />,
-        loader: fetchGroupList
+        loader: fetchGroupList,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path: "/:groupId/addExpense",
         element: <AddExepense />,
-        loader: participantsList
+        loader: participantsList,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path: "/:groupId/expense_list",
-        element: <AddExepense />
+        element: <AddExepense />,
+        loader: participantsList,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path: "/profile",
         element: <GetUserProfile />,
-        loader: fetchProfileData
+        loader: fetchProfileData,
+        errorElement: <GlobalErrorBoundary />
       },
       {
         path: "/update-password",
-        element: <UpdatePassword />
+        element: <UpdatePassword />,
+        errorElement: <GlobalErrorBoundary />
       }
     ]
   },
   {
+    // Catch-all for invalid URLs → 404 not found page
     path: "*",
-    element: <ErrorPage />
+    element: <ErrorPage typeOfError="NOT_FOUND" statusCode={404} />
   }
 ])
 
@@ -191,8 +216,10 @@ function ProtectedRoute(){
       <div className="header-content">
       <Link to="/dashboard" className="header-logo">
       
-      <span className="logo-icon"><img src="/favicon.jpg" alt="SplitLog" /></span>
-      SplitLog
+      <span className="logo-icon"><img src="/favicon.png" alt="SplitLog" /></span>
+      <span className="logo-text">
+        <span className="logo-text-split">Split</span><span className="logo-text-log">Log</span>
+      </span>
       </Link>
       <nav className="header-nav">
       {/* <Link to="/profile" className="header-logo">Profile</Link> */}

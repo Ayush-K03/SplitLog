@@ -836,7 +836,9 @@ a:hover {
 }
 
 .list-item:hover {
-  background: var(--bg-tertiary);
+  background: var(--bg-hover);
+  border-left: 2px solid var(--accent-primary);
+  padding-left: calc(var(--space-lg) - 2px);
 }
 
 .list-item:last-child {
@@ -1268,61 +1270,27 @@ a:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  
-  /* Semi-transparent background shade that masks the contents underneath */
-  background-color: rgba(255, 255, 255, 0.85); 
-  
-  /* Flexbox settings to perfectly center your loader text */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10; /* Raises it over the list items so they can't be hovered or clicked */
-  
-  font-weight: 500;
-  color: var(--accent-primary);
-}
-
-
-
-
-
-.card-processing-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  
-  /* 1. Use a soft, neutral transparent background instead of solid color */
-  background-color: rgba(255, 255, 255, 0.4); 
-  
-  /* 2. Add a premium frosted-glass blur filter */
-  backdrop-filter: blur(4px); 
-  -webkit-backdrop-filter: blur(4px); /* Safari support */
-  
-  /* 3. Smooth fade-in transition animation */
+  background-color: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   animation: fadeInOverlay 0.2s ease-in-out;
-  
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 10;
-  border-radius: inherit; /* Copies the card's exact corner curves */
+  border-radius: inherit;
+  font-weight: 500;
+  color: var(--accent-primary);
 }
 
-/* 4. Support for your App's Dark Mode theme */
 [data-theme='dark'] .card-processing-overlay {
-  background-color: rgba(0, 0, 0, 0.4); /* Dark translucent screen */
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 @keyframes fadeInOverlay {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
-
-
-
 
 
 
@@ -2040,4 +2008,230 @@ a:hover {
   border-top: 1px solid var(--border-color-light);
 }
 
+/* ===== Stat Cards ===== */
+.stat-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-sm);
+}
 
+@media (max-width: 480px) {
+  .stat-cards-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  position: relative;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg) var(--space-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-primary);
+}
+
+.stat-card-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+.stat-card-value {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-2xl);
+  font-weight: 800;
+  color: var(--accent-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.stat-card-icon {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-lg);
+  font-size: 28px;
+  opacity: 0.18;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* =========================================================
+   Pending Settlement Card
+   ========================================================= */
+.pending-settlement-card {
+  border-left: 3px solid var(--accent-warning);
+  animation: pendingCardSlideIn 0.35s ease-out;
+}
+
+@keyframes pendingCardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pending-badge {
+  background: var(--accent-warning-light) !important;
+  color: var(--accent-warning) !important;
+  animation: pendingPulse 2s ease-in-out infinite;
+}
+
+@keyframes pendingPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.pending-settlement-item {
+  padding: var(--space-md) var(--space-lg);
+  transition: all var(--transition-fast);
+}
+
+.pending-settlement-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent-warning-light);
+  color: var(--accent-warning);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: var(--space-md);
+}
+
+/* =========================================================
+   Recharts Tooltip — Theme-aware Overrides
+   Ensures tooltip text is always readable in light & dark
+   ========================================================= */
+.recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-color) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.recharts-tooltip-wrapper .recharts-tooltip-label {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+.recharts-tooltip-wrapper .recharts-tooltip-item {
+  color: var(--text-secondary) !important;
+}
+
+.recharts-tooltip-wrapper .recharts-tooltip-item-value {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+/* =========================================================
+   Logo Text — Black + Gold (light) / White + Gold (dark)
+   ========================================================= */
+.logo-text {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* "Split" part */
+.logo-text-split {
+  color: #111111;
+  transition: color var(--transition-fast);
+}
+
+[data-theme="dark"] .logo-text-split {
+  color: #f3f4f8;
+}
+
+/* "Log" part — always gold */
+.logo-text-log {
+  color: #c9920a;
+  transition: color var(--transition-fast);
+}
+
+[data-theme="dark"] .logo-text-log {
+  color: #e8a91a;
+}
+
+/* =========================================================
+   Ledger Book Group Icon
+   ========================================================= */
+.group-list-icon--ledger {
+  background: var(--accent-primary-light);
+  color: var(--accent-primary);
+}
+
+/* =========================================================
+   Settlement Pending Button
+   ========================================================= */
+.settlement-pending-btn {
+  color: var(--accent-warning) !important;
+  border-color: var(--accent-warning) !important;
+  opacity: 0.85;
+  cursor: not-allowed;
+  gap: 4px;
+}
+
+/* =========================================================
+   Stat Card — slightly richer success/danger hues
+   ========================================================= */
+:root {
+  --accent-success: #0d8c4e;
+  --accent-success-hover: #0a7040;
+  --accent-danger: #d93b40;
+  --accent-danger-hover: #be3338;
+}
+
+[data-theme="dark"] {
+  --accent-success: #30cc78;
+  --accent-success-hover: #52e294;
+  --accent-danger: #f56060;
+  --accent-danger-hover: #ff7a7a;
+}
+
+/* =========================================================
+   Error Page — Dark Mode Support
+   ========================================================= */
+[data-theme="dark"] .error-page {
+  background: #0a0b0f;
+  color: #f3f4f8;
+}
+
+[data-theme="dark"] .error-code {
+  color: #f3f4f8;
+}
+
+[data-theme="dark"] .error-content h1 {
+  color: #f3f4f8;
+}
+
+[data-theme="dark"] .error-content p {
+  color: #7d8194;
+}
+
+[data-theme="dark"] .back-button {
+  background: #f3f4f8;
+  color: #0a0b0f;
+}
+
+[data-theme="dark"] .searching-label {
+  background: #181a21;
+  color: #7d8194;
+}

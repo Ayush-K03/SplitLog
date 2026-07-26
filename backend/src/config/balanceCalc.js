@@ -13,6 +13,7 @@ export async function calculateBalances (groupId,userId){
     if (expenses.length===0) return(balances);
     
     const group= await Groups.findById(groupId);
+    if (!group) return -1; // Added null check
 
     //initial amount 0 ;
     group.members.map((eachMember)=>balances[eachMember]=0 );

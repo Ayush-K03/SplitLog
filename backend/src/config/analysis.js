@@ -16,7 +16,12 @@ export async function getAnalysisData (req,res){
         
         const matchQuery = {createdAt: { $gte: start, $lte: end }};
 
-        if (groupId) matchQuery.groupId = new Types.ObjectId(groupId);//verify this id is in userGroupIds
+        if (groupId) {
+            if (!userGroupIds.some(id => id.toString() === groupId)) {
+                return res.status(403).json({msg: "Unauthorized access to group analytics"});
+            }
+            matchQuery.groupId = new Types.ObjectId(groupId);
+        }
         else matchQuery.groupId = { $in: userGroupIds };
 
         const commonStage = { $match: matchQuery };

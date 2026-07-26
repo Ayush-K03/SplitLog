@@ -24,7 +24,7 @@ export function PieExpenseChart({ data }) {
     const legendColor = isDark ? '#a8adbb' : '#565b6d';
 
     return (
-        <div className="analysis-chart-card">
+        <>
             <h2 style={{
                 fontFamily: 'var(--font-primary)',
                 fontSize: 'var(--font-size-md)',
@@ -60,13 +60,28 @@ export function PieExpenseChart({ data }) {
                             borderRadius: '10px',
                             color: tooltipText,
                             fontSize: '13px',
+                            boxShadow: isDark
+                                ? '0 8px 24px rgba(0,0,0,0.45)'
+                                : '0 8px 24px rgba(20,22,41,0.12)',
+                            padding: '10px 14px',
                         }}
+                        labelStyle={{
+                            color: tooltipText,
+                            fontWeight: 600,
+                            marginBottom: '4px',
+                        }}
+                        itemStyle={{
+                            color: tooltipText,
+                            fontSize: '13px',
+                            padding: '2px 0',
+                        }}
+                        formatter={(value) => [`₹${(value / 100).toFixed(2)}`]}
                     />
                     <Legend
                         wrapperStyle={{ color: legendColor, fontSize: '13px' }}
                     />
                 </PieChart>
             </ResponsiveContainer>
-        </div>
+        </>
     )
-}
+}

@@ -22,9 +22,12 @@
 
   justify-content: center;
 
-  background: #ffffff;
+  background: var(--bg-primary, #ffffff);
 
-  color: #111827;
+  color: var(--text-primary, #111827);
+
+  /* Sit above the sticky header and everything else */
+  z-index: 9999;
 }
 
 

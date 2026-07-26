@@ -11,6 +11,14 @@ export function LoginPage (){
   const [formSubmission,setFormSubmission] = useState(false);
   const navigate = useNavigate();
 
+
+  // Redirection if already logged in
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify`)
+      .then(res => { if (res.data.isAuthenticated) navigate("/dashboard", { replace: true }); })
+      .catch(() => {});
+  }, []);
+
   async function handleAccountLogin() {
     setFormSubmission(true);
     try{
@@ -46,8 +54,10 @@ export function LoginPage (){
         <div className="card">
           <div className="text-center mb-3">
             <div className="auth-brand">
-              <span className="logo-icon"><img src="/favicon.jpg" alt="SplitLog" /></span>
-              <span className="auth-brand-name">SplitLog</span>
+              <span className="logo-icon"><img src="/favicon.png" alt="SplitLog" /></span>
+              <span className="auth-brand-name logo-text">
+                <span className="logo-text-split">Split</span><span className="logo-text-log">Log</span>
+              </span>
             </div>
             <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Welcome back</h1>
             <p className="text-muted" style={{ marginBottom: 0 }}>Sign in to manage your shared expenses</p>

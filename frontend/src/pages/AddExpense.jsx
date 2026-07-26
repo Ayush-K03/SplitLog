@@ -18,12 +18,6 @@ export function AddExepense(){
     
     
     const categories = ["Food", "Travel", "Shopping", "Entertainment", "Education", "Groceries", "Rent and Utilities", "Healthcare", "Subscriptions", "Other"];
-    //function for category selection and change
-    const handleChange = (e) => {
-      const value = e.target.value;
-      setCategory(value);
-      if (onSelect) onSelect(value);
-    };
 
 
     async function updateUserList(userId){

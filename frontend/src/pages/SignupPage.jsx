@@ -1,7 +1,7 @@
 
-import {useState} from "react"
+import {useState, useEffect} from "react"
 import axios from "axios";
-import {useNavigate} from "react-router";
+import {useNavigate, Link} from "react-router";
 import { showNotification } from "../helper_functions/toast_helper";
 axios.defaults.withCredentials = true;
 
@@ -13,6 +13,15 @@ export function SignUpPage (){
 
   const [formSubmission,setFormSubmission] = useState(false);
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/verify`)
+      .then(res => { if (res.data.isAuthenticated) navigate("/dashboard", { replace: true }); })
+      .catch(() => {});
+  }, []);
+
+
 
   async function handleAccountCreation() {
     setFormSubmission(true);
@@ -65,8 +74,10 @@ export function SignUpPage (){
         <div className="card">
           <div className="text-center mb-3">
             <div className="auth-brand">
-              <span className="logo-icon"><img src="/favicon.jpg" alt="SplitLog" /></span>
-              <span className="auth-brand-name">SplitLog</span>
+              <span className="logo-icon"><img src="/favicon.png" alt="SplitLog" /></span>
+              <span className="auth-brand-name logo-text">
+                <span className="logo-text-split">Split</span><span className="logo-text-log">Log</span>
+              </span>
             </div>
             <h1 style={{ fontSize: '22px', marginBottom: '6px', fontWeight: 700 }}>Create Account</h1>
             <p className="text-muted" style={{ marginBottom: 0 }}>Join SplitLog to split expenses effortlessly</p>
@@ -139,7 +150,7 @@ export function SignUpPage (){
           <div className="text-center mt-2">
             <p className="text-muted">
               Already have an account?{' '}
-              <a href="/login">Sign In</a>
+              <Link to="/login">Sign In</Link>
             </p>
           </div>
           <div className="auth-trust">

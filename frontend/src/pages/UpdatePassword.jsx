@@ -29,11 +29,11 @@ export function UpdatePassword() {
         }
         catch (err){
             if (err.status === 401) {
-                console.error("Unauthorized: ", err.response.data.msg);
-                alert("Error: " + err.response.data.msg);
+                console.error("Unauthorized: ", err.response?.data?.msg || "Unknown error");
+                alert("Error: " + (err.response?.data?.msg || "Session expired"));
             }
             console.error("Error during password update:", err);
-            setErrorMessage("Unauthorized: " + err.response.data.msg);
+            setErrorMessage("Error: " + (err.response?.data?.msg || "A network or server error occurred"));
             setUpdatingPassword(false);
             return 
         }

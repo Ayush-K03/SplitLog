@@ -48,7 +48,7 @@ export function ShowPastSettlements(){
                                 </div>
                                 <div className="list-item-content">
                                     <div className="list-item-title">
-                                        Paid to {value.to.firstName}
+                                        Paid to {value.to?.firstName || "Unknown User"}
                                     </div>
                                     <div className="list-item-subtitle">
                                         {new Date(value.createdAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}

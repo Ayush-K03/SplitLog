@@ -1,6 +1,6 @@
 import { useNavigation, Form } from 'react-router';
 
-export function SmartForm({ children, loadingMessage = "Saving...", ...props }) {
+export function SmartForm({ children, loadingMessage = "Saving...", isLoading = false, ...props }) {
   const navigation = useNavigation();
    const isSaving = isLoading || navigation.state === "submitting";
 

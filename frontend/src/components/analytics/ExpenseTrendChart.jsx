@@ -17,7 +17,7 @@ export function ExpenseTrendChart({ data }) {
     const tooltipText = isDark ? '#f3f4f8' : '#14161f';
 
     return (
-        <div className="analysis-chart-card">
+        <>
             <h2 style={{
                 fontFamily: 'var(--font-primary)',
                 fontSize: 'var(--font-size-md)',
@@ -52,7 +52,22 @@ export function ExpenseTrendChart({ data }) {
                             borderRadius: '10px',
                             color: tooltipText,
                             fontSize: '13px',
+                            boxShadow: isDark
+                                ? '0 8px 24px rgba(0,0,0,0.45)'
+                                : '0 8px 24px rgba(20,22,41,0.12)',
+                            padding: '10px 14px',
                         }}
+                        labelStyle={{
+                            color: tooltipText,
+                            fontWeight: 600,
+                            marginBottom: '4px',
+                        }}
+                        itemStyle={{
+                            color: tooltipText,
+                            fontSize: '13px',
+                            padding: '2px 0',
+                        }}
+                        formatter={(value) => [`₹${(value / 100).toFixed(2)}`, 'Expense']}
                         cursor={{ stroke: isDark ? 'rgba(131,133,245,0.3)' : 'rgba(79,70,229,0.2)', strokeWidth: 1.5 }}
                     />
                     <Line
@@ -65,6 +80,6 @@ export function ExpenseTrendChart({ data }) {
                     />
                 </LineChart>
             </ResponsiveContainer>
-        </div>
+        </>
     );
-}
+}

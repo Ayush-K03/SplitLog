@@ -111,6 +111,7 @@ export async function logoutUser(req,res) {
 export async function updateUserPassword(req,res) {
   try{
     const currentUser = await User.findById(req.user.userId);
+    if (!currentUser) return res.status(404).json({msg: "User not found"});
     const oldPasswordValidation = await bcrypt.compare(req.body.oldPassword, currentUser.password);
 
     if (!oldPasswordValidation) {

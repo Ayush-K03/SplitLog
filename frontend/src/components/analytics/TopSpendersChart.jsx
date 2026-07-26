@@ -27,7 +27,7 @@ export function TopSpendersChart({ data }) {
     const tooltipText = isDark ? '#f3f4f8' : '#14161f';
 
     return (
-        <div className="analysis-chart-card">
+        <>
             <h2 style={{
                 fontFamily: 'var(--font-primary)',
                 fontSize: 'var(--font-size-md)',
@@ -66,7 +66,22 @@ export function TopSpendersChart({ data }) {
                             borderRadius: '10px',
                             color: tooltipText,
                             fontSize: '13px',
+                            boxShadow: isDark
+                                ? '0 8px 24px rgba(0,0,0,0.45)'
+                                : '0 8px 24px rgba(20,22,41,0.12)',
+                            padding: '10px 14px',
                         }}
+                        labelStyle={{
+                            color: tooltipText,
+                            fontWeight: 600,
+                            marginBottom: '4px',
+                        }}
+                        itemStyle={{
+                            color: tooltipText,
+                            fontSize: '13px',
+                            padding: '2px 0',
+                        }}
+                        formatter={(value) => [`₹${(value / 100).toFixed(2)}`, 'Total Spend']}
                         cursor={{ fill: isDark ? 'rgba(131,133,245,0.08)' : 'rgba(79,70,229,0.06)' }}
                     />
                     <Bar dataKey="totalSpend" name="Total Spend" radius={[0, 6, 6, 0]}>
@@ -76,6 +91,6 @@ export function TopSpendersChart({ data }) {
                     </Bar>
                 </BarChart>
             </ResponsiveContainer>
-        </div>
+        </>
     );
-}
+}
